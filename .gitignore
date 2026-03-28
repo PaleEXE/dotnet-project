@@ -1,0 +1,63 @@
+## --- Visual Studio & .NET Core ---
+## Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Bb]in/
+[Oo]bj/
+
+## Visual Studio cache and settings
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## --- Database & Secrets ---
+## SQL Server files (LocalDB)
+*.mdf
+*.ldf
+*.ndf
+
+## SQLite (if used for local dev)
+*.db
+*.db-shm
+*.db-wal
+
+## Environment Secrets (Crucial)
+appsettings.Development.json
+appsettings.Local.json
+*.pfx
+*.publishsettings
+.env
+.env.local
+
+## --- Node / React Frontend ---
+## Dependencies
+node_modules/
+jspm_packages/
+
+## Production build output
+# Adjust this path if your build folder is named 'dist'
+frontend/build/
+frontend/dist/
+
+## Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+## Frontend-specific IDE/Tooling
+.eslintcache
+.stylelintcache
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+frontend/.env.local
+
+## --- OS Generated Files ---
+.DS_Store
+Thumbs.db
