@@ -10,26 +10,13 @@ public static class OrganizationsApi
     {
         // GET /organizations
         app.MapGet("/organizations", async (AppDbContext db) =>
-            Results.Ok(await db.Organizations.Include(o => o.User).ToListAsync()));
+            Results.Ok(await db.Organizations.ToListAsync()));
 
         // GET /organizations/{id}
         app.MapGet("/organizations/{id}", async (int id, AppDbContext db) =>
-            await db.Organizations.Include(o => o.User).FirstOrDefaultAsync(o => o.Id == id) is Organization org
+            await db.Organizations.FirstOrDefaultAsync(o => o.Id == id) is Organization org
                 ? Results.Ok(org)
                 : Results.NotFound(new { message = "Organization not found" }));
-
-        // POST /organizations
-        app.MapPost("/organizations", async (Organization org, AppDbContext db) =>
-        {
-            if (string.IsNullOrWhiteSpace(org.Name))
-                return Results.BadRequest(new { message = "Name is required" });
-            if (org.UserId <= 0)
-                return Results.BadRequest(new { message = "UserId is required" });
-
-            db.Organizations.Add(org);
-            await db.SaveChangesAsync();
-            return Results.Created($"/organizations/{org.Id}", org);
-        });
 
         // PUT /organizations/{id}
         app.MapPut("/organizations/{id}", async (int id, Organization input, AppDbContext db) =>
@@ -38,8 +25,8 @@ public static class OrganizationsApi
             if (org is null) return Results.NotFound(new { message = "Organization not found" });
 
             org.Name = input.Name;
-            org.Description = input.Description;
-            org.ContactPhone = input.ContactPhone;
+            org.PhoneNumber = input.PhoneNumber;
+            org.LogoUrl = input.LogoUrl;
 
             await db.SaveChangesAsync();
             return Results.Ok(org);

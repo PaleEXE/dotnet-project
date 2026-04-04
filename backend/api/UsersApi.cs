@@ -18,30 +18,18 @@ public static class UsersApi
                 ? Results.Ok(user)
                 : Results.NotFound(new { message = "User not found" }));
 
-        // POST /users
-        app.MapPost("/users", async (User user, AppDbContext db) =>
-        {
-            if (string.IsNullOrWhiteSpace(user.Email))
-                return Results.BadRequest(new { message = "Email is required" });
-            if (string.IsNullOrWhiteSpace(user.PasswordHash))
-                return Results.BadRequest(new { message = "PasswordHash is required" });
-            if (string.IsNullOrWhiteSpace(user.Role))
-                return Results.BadRequest(new { message = "Role is required" });
-
-            db.Users.Add(user);
-            await db.SaveChangesAsync();
-            return Results.Created($"/users/{user.Id}", user);
-        });
-
         // PUT /users/{id}
         app.MapPut("/users/{id}", async (int id, User input, AppDbContext db) =>
         {
             var user = await db.Users.FindAsync(id);
             if (user is null) return Results.NotFound(new { message = "User not found" });
 
-            user.Email = input.Email;
-            user.PasswordHash = input.PasswordHash;
+            user.FullName = input.FullName;
+            user.PhoneNumber = input.PhoneNumber;
             user.Role = input.Role;
+            user.UniversityId = input.UniversityId;
+            user.TakingVolunteeringCourse = input.TakingVolunteeringCourse;
+            user.ProfilePictureUrl = input.ProfilePictureUrl;
 
             await db.SaveChangesAsync();
             return Results.Ok(user);

@@ -52,6 +52,7 @@ using (var scope = app.Services.CreateScope())
 
 // ── Middleware ──────────────────────────────────────────────────
 app.UseCors();
+app.UseStaticFiles(); // Allow serving uploads from wwwroot
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseAuthentication();
@@ -60,10 +61,13 @@ app.UseAuthorization();
 // ── Map endpoints ──────────────────────────────────────────────
 app.MapAuthEndpoints();
 app.MapUserEndpoints();
-app.MapStudentEndpoints();
 app.MapOrganizationEndpoints();
 app.MapTaskEndpoints();
-app.MapApplicationEndpoints();
-app.MapWorkLogEndpoints();
+app.MapVolunteerEndpoints();
+app.MapHoursEndpoints();
+app.MapTagEndpoints();
+app.MapTaskImageEndpoints();
+app.MapUploadEndpoints();
+app.MapAdminEndpoints();
 
 app.Run();

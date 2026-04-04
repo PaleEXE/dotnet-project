@@ -3,12 +3,13 @@ namespace backend.db.Models;
 public class Organization
 {
     public int Id { get; set; }
-    public int UserId { get; set; }
     public string Name { get; set; } = null!;
-    public string? Description { get; set; }
-    public string? ContactPhone { get; set; }
+    public string Email { get; set; } = null!;
+    public string PasswordHash { get; set; } = null!;
+    public string? PhoneNumber { get; set; }
+    public string? LogoUrl { get; set; }
+    public DateTime CreatedAt { get; set; }
 
     // Navigation
-    public User User { get; set; } = null!;
     public ICollection<Task> Tasks { get; set; } = new List<Task>();
 }

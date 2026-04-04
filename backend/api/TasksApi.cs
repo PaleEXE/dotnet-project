@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using backend.db;
+using backend.db.Models;
 using TaskModel = backend.db.Models.Task;
 
 namespace backend.api;
@@ -10,11 +11,19 @@ public static class TasksApi
     {
         // GET /tasks
         app.MapGet("/tasks", async (AppDbContext db) =>
-            Results.Ok(await db.Tasks.Include(t => t.Organization).ToListAsync()));
+            Results.Ok(await db.Tasks
+                .Include(t => t.Organization)
+                .Include(t => t.TaskTags).ThenInclude(tt => tt.Tag)
+                .Include(t => t.TaskImages)
+                .ToListAsync()));
 
         // GET /tasks/{id}
         app.MapGet("/tasks/{id}", async (int id, AppDbContext db) =>
-            await db.Tasks.Include(t => t.Organization).FirstOrDefaultAsync(t => t.Id == id) is TaskModel task
+            await db.Tasks
+                .Include(t => t.Organization)
+                .Include(t => t.TaskTags).ThenInclude(tt => tt.Tag)
+                .Include(t => t.TaskImages)
+                .FirstOrDefaultAsync(t => t.Id == id) is TaskModel task
                 ? Results.Ok(task)
                 : Results.NotFound(new { message = "Task not found" }));
 
@@ -22,21 +31,42 @@ public static class TasksApi
         app.MapGet("/tasks/open", async (AppDbContext db) =>
             Results.Ok(await db.Tasks
                 .Include(t => t.Organization)
+                .Include(t => t.TaskTags).ThenInclude(tt => tt.Tag)
+                .Include(t => t.TaskImages)
                 .Where(t => t.Status == "open")
                 .ToListAsync()));
 
         // POST /tasks
-        app.MapPost("/tasks", async (TaskModel task, AppDbContext db) =>
+        app.MapPost("/tasks", async (TaskCreateRequest req, AppDbContext db) =>
         {
-            if (string.IsNullOrWhiteSpace(task.Title))
-                return Results.BadRequest(new { message = "Title is required" });
-            if (string.IsNullOrWhiteSpace(task.Description))
-                return Results.BadRequest(new { message = "Description is required" });
-            if (task.OrgId <= 0)
-                return Results.BadRequest(new { message = "OrgId is required" });
+            if (string.IsNullOrWhiteSpace(req.Title)) return Results.BadRequest(new { message = "Title is required" });
+            if (req.OrganizationId <= 0) return Results.BadRequest(new { message = "OrganizationId is required" });
+
+            var task = new TaskModel
+            {
+                OrganizationId = req.OrganizationId,
+                Title = req.Title,
+                Description = req.Description,
+                MaxVolunteers = req.MaxVolunteers,
+                StartDate = req.StartDate,
+                EndDate = req.EndDate
+            };
 
             db.Tasks.Add(task);
             await db.SaveChangesAsync();
+
+            if (req.TagIds != null && req.TagIds.Any())
+            {
+                foreach (var tagId in req.TagIds)
+                {
+                    if (await db.Tags.AnyAsync(t => t.Id == tagId))
+                    {
+                        db.TaskTags.Add(new TaskTag { TaskId = task.Id, TagId = tagId });
+                    }
+                }
+                await db.SaveChangesAsync();
+            }
+
             return Results.Created($"/tasks/{task.Id}", task);
         });
 
@@ -48,7 +78,7 @@ public static class TasksApi
 
             task.Title = input.Title;
             task.Description = input.Description;
-            task.VolunteersNeeded = input.VolunteersNeeded;
+            task.MaxVolunteers = input.MaxVolunteers;
             task.Status = input.Status;
             task.StartDate = input.StartDate;
             task.EndDate = input.EndDate;
@@ -68,4 +98,15 @@ public static class TasksApi
             return Results.NoContent();
         });
     }
+}
+
+public class TaskCreateRequest
+{
+    public int OrganizationId { get; set; }
+    public string Title { get; set; } = null!;
+    public string? Description { get; set; }
+    public int? MaxVolunteers { get; set; }
+    public DateTime? StartDate { get; set; }
+    public DateTime? EndDate { get; set; }
+    public List<int>? TagIds { get; set; }
 }

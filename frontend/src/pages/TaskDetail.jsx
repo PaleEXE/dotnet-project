@@ -2,102 +2,195 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { API } from '../App';
 
-export default function TaskDetail({ user, token }) {
+export default function TaskDetail({ user }) {
   const { id } = useParams();
   const [task, setTask] = useState(null);
-  const [applications, setApplications] = useState([]);
-  const [studentProfile, setStudentProfile] = useState(null);
+  const [volunteers, setVolunteers] = useState([]);
   const [alreadyApplied, setAlreadyApplied] = useState(false);
   const [message, setMessage] = useState('');
 
   useEffect(() => {
     fetch(`${API}/tasks/${id}`).then(r => r.json()).then(setTask);
-    fetch(`${API}/applications/task/${id}`).then(r => r.json()).then(setApplications);
-
-    if (user.role === 'student') {
-      fetch(`${API}/students`)
-        .then(r => r.json())
-        .then(students => {
-          const mine = students.find(s => s.userId === user.id);
-          setStudentProfile(mine);
-        });
-    }
-  }, [id, user]);
+    fetch(`${API}/volunteers/task/${id}`).then(r => r.json()).then(setVolunteers);
+  }, [id]);
 
   useEffect(() => {
-    if (studentProfile && applications.length > 0) {
-      setAlreadyApplied(applications.some(a => a.studentId === studentProfile.id));
+    if (user.role === 'student' && volunteers.length > 0) {
+      setAlreadyApplied(volunteers.some(v => v.userId === user.id));
     }
-  }, [studentProfile, applications]);
+  }, [user, volunteers]);
 
   const handleApply = async () => {
-    if (!studentProfile) return;
-    const res = await fetch(`${API}/applications`, {
+    const res = await fetch(`${API}/volunteers`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ taskId: parseInt(id), studentId: studentProfile.id }),
+      body: JSON.stringify({ taskId: parseInt(id), userId: user.id }),
     });
     if (res.ok) {
       setAlreadyApplied(true);
-      setMessage('Application submitted!');
-      fetch(`${API}/applications/task/${id}`).then(r => r.json()).then(setApplications);
+      setMessage('Volunteer application submitted!');
+      fetch(`${API}/volunteers/task/${id}`).then(r => r.json()).then(setVolunteers);
     } else {
       const data = await res.json();
       setMessage(data.message || 'Failed to apply');
     }
   };
 
-  const handleStatus = async (appId, status) => {
-    await fetch(`${API}/applications/${appId}`, {
+  const handleStatus = async (volunteerId, status) => {
+    await fetch(`${API}/volunteers/${volunteerId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status }),
     });
-    fetch(`${API}/applications/task/${id}`).then(r => r.json()).then(setApplications);
+    fetch(`${API}/volunteers/task/${id}`).then(r => r.json()).then(setVolunteers);
   };
 
-  if (!task) return <div className="page">Loading...</div>;
+  if (!task) return <div className="py-20 text-center text-slate-500 font-medium">Loading task details...</div>;
 
   return (
-    <div className="page">
-      <h1>{task.title}</h1>
-      <span className={`badge badge-${task.status}`}>{task.status}</span>
+    <div className="space-y-8">
+      
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        {/* Cover Images */}
+        {task.taskImages && task.taskImages.length > 0 && (
+          <div className="h-64 w-full bg-slate-100 border-b border-slate-200 overflow-hidden relative">
+            <div className="flex h-full w-full overflow-x-auto snap-x">
+              {task.taskImages.map(img => (
+                <img key={img.id} src={img.imageUrl} alt="Task visual" className="h-full object-cover min-w-full snap-start" />
+              ))}
+            </div>
+            {task.taskImages.length > 1 && (
+               <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded">
+                 {task.taskImages.length} images
+               </div>
+            )}
+          </div>
+        )}
 
-      <div className="card" style={{ marginTop: 16 }}>
-        <p><strong>Description:</strong> {task.description}</p>
-        {task.volunteersNeeded && <p><strong>Volunteers needed:</strong> {task.volunteersNeeded}</p>}
-        {task.startDate && <p><strong>Start date:</strong> {task.startDate.split('T')[0]}</p>}
-        {task.endDate && <p><strong>End date:</strong> {task.endDate.split('T')[0]}</p>}
-        {task.organization && <p><strong>Organization:</strong> {task.organization.name}</p>}
+        <div className="p-8">
+          <div className="flex items-baseline justify-between mb-4">
+            <h1 className="text-3xl font-bold text-slate-900 tracking-tight">{task.title}</h1>
+            <span className={`px-3 py-1 text-sm font-bold uppercase tracking-wider rounded-full ${
+              task.status === 'open' ? 'bg-emerald-100 text-emerald-800' : 
+              task.status === 'closed' ? 'bg-red-100 text-red-800' : 
+              'bg-blue-100 text-blue-800'
+            }`}>
+              {task.status}
+            </span>
+          </div>
+
+          {task.taskTags && task.taskTags.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-6">
+              {task.taskTags.map(tt => (
+                <span key={tt.tagId} className="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide">
+                  {tt.tag.name}
+                </span>
+              ))}
+            </div>
+          )}
+
+          <div className="prose prose-slate max-w-none text-slate-700 leading-relaxed mb-8">
+            <p>{task.description}</p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-8 bg-slate-50 p-6 rounded-lg border border-slate-100">
+            {task.organization && (
+              <div>
+                <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-1">Organization</p>
+                <p className="font-medium text-slate-900">{task.organization.name}</p>
+              </div>
+            )}
+            {task.maxVolunteers && (
+              <div>
+                <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-1">Volunteers Needed</p>
+                <p className="font-medium text-slate-900">{task.maxVolunteers}</p>
+              </div>
+            )}
+            {task.startDate && (
+              <div>
+                <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-1">Start Date</p>
+                <p className="font-medium text-slate-900">{new Date(task.startDate).toLocaleDateString()}</p>
+              </div>
+            )}
+            {task.endDate && (
+              <div>
+                <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-1">End Date</p>
+                <p className="font-medium text-slate-900">{new Date(task.endDate).toLocaleDateString()}</p>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
-      {message && <div className="success-msg">{message}</div>}
+      {message && (
+         <div className="bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded-r-md">
+           <p className="text-sm text-emerald-700 font-medium">{message}</p>
+         </div>
+      )}
 
+      {/* Action Button for Students */}
       {user.role === 'student' && !alreadyApplied && task.status === 'open' && (
-        <button className="btn btn-primary" onClick={handleApply} style={{ marginTop: 12 }}>
-          Apply to this Task
+        <button 
+          className="w-full sm:w-auto px-8 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg shadow-sm transition-colors text-lg"
+          onClick={handleApply}
+        >
+          Volunteer for this Task
         </button>
       )}
+      
       {user.role === 'student' && alreadyApplied && (
-        <p style={{ marginTop: 12, color: '#2e7d32', fontWeight: 500 }}>You have already applied to this task.</p>
+        <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 p-4 rounded-lg flex items-center">
+          <svg className="w-6 h-6 mr-3 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          <span className="font-medium">You are actively volunteering for this task.</span>
+        </div>
       )}
 
+      {/* Volunteers List for Organizations */}
       {user.role === 'organization' && (
-        <div style={{ marginTop: 24 }}>
-          <h2>Applicants ({applications.length})</h2>
-          {applications.length === 0 && <p>No applications yet.</p>}
-          {applications.map(a => (
-            <div className="card" key={a.id}>
-              <p><strong>{a.student?.fullName || `Student #${a.studentId}`}</strong></p>
-              <span className={`badge badge-${a.status}`}>{a.status}</span>
-              {a.status === 'pending' && (
-                <div className="btn-row">
-                  <button className="btn btn-primary btn-small" onClick={() => handleStatus(a.id, 'accepted')}>Accept</button>
-                  <button className="btn btn-danger btn-small" onClick={() => handleStatus(a.id, 'rejected')}>Reject</button>
+        <div className="pt-6">
+          <h2 className="text-2xl font-bold text-slate-900 mb-6 border-b border-slate-200 pb-2">Registered Volunteers ({volunteers.length})</h2>
+          
+          {volunteers.length === 0 ? (
+            <p className="text-slate-500 italic">No volunteers have registered yet.</p>
+          ) : (
+            <div className="space-y-4">
+              {volunteers.map(v => (
+                <div key={v.id} className="bg-white p-5 rounded-lg shadow-sm border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div>
+                    <p className="font-bold text-slate-800 text-lg">{v.user?.fullName || `User #${v.userId}`}</p>
+                    <p className="text-sm text-slate-500 mt-1">Applied: {new Date(v.joinedAt).toLocaleDateString()}</p>
+                  </div>
+                  
+                  <div className="flex items-center gap-4">
+                    <span className={`px-2.5 py-1 text-xs font-bold uppercase tracking-wider rounded-full ${
+                      v.status === 'approved' ? 'bg-emerald-100 text-emerald-800' :
+                      v.status === 'rejected' ? 'bg-red-100 text-red-800' :
+                      'bg-orange-100 text-orange-800'
+                    }`}>
+                      {v.status}
+                    </span>
+
+                    {v.status === 'pending' && (
+                      <div className="flex gap-2">
+                        <button 
+                          onClick={() => handleStatus(v.id, 'approved')}
+                          className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded transition-colors"
+                        >
+                          Approve
+                        </button>
+                        <button 
+                          onClick={() => handleStatus(v.id, 'rejected')}
+                          className="px-3 py-1.5 bg-white border border-red-300 text-red-700 hover:bg-red-50 text-sm font-semibold rounded transition-colors"
+                        >
+                          Reject
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              )}
+              ))}
             </div>
-          ))}
+          )}
         </div>
       )}
     </div>
