@@ -17,4 +17,5 @@ public class User
     // Navigation
     public ICollection<TaskVolunteer> TaskVolunteers { get; set; } = new List<TaskVolunteer>();
     public ICollection<VolunteerHour> VolunteerHours { get; set; } = new List<VolunteerHour>();
+    public ICollection<OrganizationReview> OrganizationReviews { get; set; } = new List<OrganizationReview>();
 }

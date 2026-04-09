@@ -4,55 +4,47 @@ import { API } from '../App';
 
 export default function MyApplications({ user }) {
   const [volunteers, setVolunteers] = useState([]);
-  const [logFormId, setLogFormId] = useState(null);
-  const [workDate, setWorkDate] = useState('');
-  const [hours, setHours] = useState('');
-  const [notes, setNotes] = useState('');
-  const [message, setMessage] = useState('');
+  const [hoursByTask, setHoursByTask] = useState({});
 
   useEffect(() => {
     fetch(`${API}/volunteers/user/${user.id}`)
       .then(r => r.json())
-      .then(setVolunteers);
+      .then(data => {
+        setVolunteers(data);
+        // Load hours for each approved task
+        data.filter(v => v.status === 'approved').forEach(v => {
+          fetch(`${API}/hours/user/${user.id}`)
+            .then(r => r.json())
+            .then(hours => {
+              const taskHours = hours.filter(h => h.taskId === v.taskId);
+              if (taskHours.length > 0) {
+                setHoursByTask(prev => ({ ...prev, [v.taskId]: taskHours }));
+              }
+            });
+        });
+      });
   }, [user]);
 
-  const handleLogHours = async (taskId) => {
-    setMessage('');
-    const res = await fetch(`${API}/hours`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        taskId: taskId,
-        userId: user.id,
-        hoursWorked: parseFloat(hours),
-        recordedAt: workDate ? new Date(workDate).toISOString() : new Date().toISOString(),
-        notes,
-      }),
-    });
-
-    if (res.ok) {
-      setMessage('Hours logged successfully!');
-      setLogFormId(null);
-      setWorkDate('');
-      setHours('');
-      setNotes('');
-    } else {
-      const data = await res.json();
-      setMessage(data.message || 'Failed to log hours');
-    }
-  };
+  const totalHours = Object.values(hoursByTask).flat().reduce((sum, h) => sum + h.hoursWorked, 0);
 
   return (
     <div className="max-w-4xl mx-auto">
       <div className="mb-8 border-b border-slate-200 pb-4">
         <h1 className="text-3xl font-bold text-slate-900 tracking-tight">My Volunteering</h1>
-        <p className="text-slate-500 mt-2">Track the tasks you've joined and log your hours</p>
+        <p className="text-slate-500 mt-2">Track the tasks you've joined and your logged hours</p>
       </div>
 
-      {message && (
-         <div className="bg-emerald-50 border-l-4 border-emerald-500 p-4 mb-6 rounded-r-md">
-           <p className="text-sm text-emerald-700 font-medium">{message}</p>
-         </div>
+      {/* Hours Summary */}
+      {totalHours > 0 && (
+        <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-5 mb-6 flex items-center gap-4">
+          <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
+            <svg className="w-6 h-6 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-emerald-800 uppercase tracking-wider">Total Hours Logged</p>
+            <p className="text-2xl font-bold text-emerald-900">{totalHours.toFixed(1)} hours</p>
+          </div>
+        </div>
       )}
 
       {volunteers.length === 0 ? (
@@ -89,68 +81,26 @@ export default function MyApplications({ user }) {
                   Joined: {v.joinedAt?.split('T')[0]}
                 </p>
 
-                {v.status === 'approved' && logFormId !== v.id && (
-                  <button
-                    className="mt-6 px-4 py-2 bg-slate-100 hover:bg-emerald-50 text-emerald-700 border border-slate-200 hover:border-emerald-200 text-sm font-semibold rounded-lg transition-colors flex items-center gap-2"
-                    onClick={() => setLogFormId(v.id)}
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-                    Log Hours
-                  </button>
-                )}
-
-                {/* Log Hours Form */}
-                {logFormId === v.id && (
-                  <div className="mt-6 bg-slate-50 border border-slate-200 p-5 rounded-lg max-w-lg">
-                    <h4 className="text-sm font-bold text-slate-800 mb-4 uppercase tracking-wider">Log Time Entry</h4>
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-xs font-semibold text-slate-700 mb-1">Date</label>
-                          <input 
-                            type="date" 
-                            value={workDate} 
-                            onChange={e => setWorkDate(e.target.value)} 
-                            className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-emerald-500 focus:border-emerald-500 text-sm"
-                          />
+                {/* Show logged hours for approved volunteers */}
+                {v.status === 'approved' && hoursByTask[v.taskId] && hoursByTask[v.taskId].length > 0 && (
+                  <div className="mt-4 bg-slate-50 border border-slate-200 rounded-lg p-4">
+                    <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                      <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                      Logged Hours
+                    </h4>
+                    <div className="space-y-2">
+                      {hoursByTask[v.taskId].map(h => (
+                        <div key={h.id} className="flex items-center justify-between text-sm">
+                          <div className="flex items-center gap-2">
+                            <span className="font-semibold text-emerald-700">{h.hoursWorked}h</span>
+                            {h.notes && <span className="text-slate-500">— {h.notes}</span>}
+                          </div>
+                          <span className="text-xs text-slate-400">{new Date(h.recordedAt).toLocaleDateString()}</span>
                         </div>
-                        <div>
-                          <label className="block text-xs font-semibold text-slate-700 mb-1">Hours</label>
-                          <input 
-                            type="number" 
-                            step="0.5" 
-                            min="0.5" 
-                            value={hours} 
-                            onChange={e => setHours(e.target.value)} 
-                            required 
-                            placeholder="e.g. 2.5"
-                            className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-emerald-500 focus:border-emerald-500 text-sm"
-                          />
-                        </div>
-                      </div>
-                      <div>
-                        <label className="block text-xs font-semibold text-slate-700 mb-1">Notes (Optional)</label>
-                        <textarea 
-                          value={notes} 
-                          onChange={e => setNotes(e.target.value)} 
-                          rows="2"
-                          className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-emerald-500 focus:border-emerald-500 text-sm"
-                          placeholder="What did you accomplish?"
-                        />
-                      </div>
-                      <div className="flex gap-3 pt-2">
-                        <button 
-                          onClick={() => handleLogHours(v.taskId)}
-                          className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-md transition-colors"
-                        >
-                          Submit Log
-                        </button>
-                        <button 
-                          onClick={() => setLogFormId(null)}
-                          className="px-4 py-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-sm font-semibold rounded-md transition-colors"
-                        >
-                          Cancel
-                        </button>
+                      ))}
+                      <div className="pt-2 mt-2 border-t border-slate-200 flex justify-between text-sm font-semibold">
+                        <span className="text-slate-700">Total</span>
+                        <span className="text-emerald-700">{hoursByTask[v.taskId].reduce((s, h) => s + h.hoursWorked, 0).toFixed(1)}h</span>
                       </div>
                     </div>
                   </div>

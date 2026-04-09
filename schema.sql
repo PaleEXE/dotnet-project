@@ -20,6 +20,7 @@ CREATE TABLE organizations (
     password_hash     VARCHAR(255) NOT NULL,
     phone_number      VARCHAR(20),
     logo_url          VARCHAR(500),
+    description       VARCHAR(1000),
     created_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -83,4 +84,17 @@ CREATE TABLE task_tags (
     PRIMARY KEY (task_id, tag_id),
     FOREIGN KEY (task_id) REFERENCES tasks(id),
     FOREIGN KEY (tag_id)  REFERENCES tags(id)
+);
+
+-- Reviews / ratings for organizations
+CREATE TABLE organization_reviews (
+    id                INT PRIMARY KEY AUTO_INCREMENT,
+    organization_id   INT NOT NULL,
+    user_id           INT NOT NULL,
+    rating            INT NOT NULL CHECK (rating BETWEEN 1 AND 5),
+    comment           VARCHAR(1000),
+    created_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (organization_id, user_id),
+    FOREIGN KEY (organization_id) REFERENCES organizations(id),
+    FOREIGN KEY (user_id)          REFERENCES users(id)
 );

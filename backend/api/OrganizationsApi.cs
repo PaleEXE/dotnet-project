@@ -10,13 +10,52 @@ public static class OrganizationsApi
     {
         // GET /organizations
         app.MapGet("/organizations", async (AppDbContext db) =>
-            Results.Ok(await db.Organizations.ToListAsync()));
+        {
+            var orgs = await db.Organizations
+                .Include(o => o.Tasks)
+                .Include(o => o.Reviews)
+                .ToListAsync();
+
+            return Results.Ok(orgs.Select(o => new
+            {
+                o.Id,
+                o.Name,
+                o.Email,
+                o.PhoneNumber,
+                o.LogoUrl,
+                o.Description,
+                o.CreatedAt,
+                TaskCount = o.Tasks.Count,
+                AverageRating = o.Reviews.Count > 0 ? Math.Round(o.Reviews.Average(r => r.Rating), 1) : 0,
+                ReviewCount = o.Reviews.Count
+            }));
+        });
 
         // GET /organizations/{id}
         app.MapGet("/organizations/{id}", async (int id, AppDbContext db) =>
-            await db.Organizations.FirstOrDefaultAsync(o => o.Id == id) is Organization org
-                ? Results.Ok(org)
-                : Results.NotFound(new { message = "Organization not found" }));
+        {
+            var org = await db.Organizations
+                .Include(o => o.Tasks)
+                .Include(o => o.Reviews)
+                .FirstOrDefaultAsync(o => o.Id == id);
+
+            if (org is null) return Results.NotFound(new { message = "Organization not found" });
+
+            return Results.Ok(new
+            {
+                org.Id,
+                org.Name,
+                org.Email,
+                org.PhoneNumber,
+                org.LogoUrl,
+                org.Description,
+                org.CreatedAt,
+                TaskCount = org.Tasks.Count,
+                AverageRating = org.Reviews.Count > 0 ? Math.Round(org.Reviews.Average(r => r.Rating), 1) : 0,
+                ReviewCount = org.Reviews.Count,
+                Tasks = org.Tasks.Select(t => new { t.Id, t.Title, t.Description, t.Status, t.StartDate, t.EndDate, t.MaxVolunteers })
+            });
+        });
 
         // PUT /organizations/{id}
         app.MapPut("/organizations/{id}", async (int id, Organization input, AppDbContext db) =>
@@ -27,6 +66,7 @@ public static class OrganizationsApi
             org.Name = input.Name;
             org.PhoneNumber = input.PhoneNumber;
             org.LogoUrl = input.LogoUrl;
+            org.Description = input.Description;
 
             await db.SaveChangesAsync();
             return Results.Ok(org);

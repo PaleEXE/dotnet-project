@@ -15,6 +15,7 @@ public class AppDbContext : DbContext
     public DbSet<TaskImage> TaskImages => Set<TaskImage>();
     public DbSet<Tag> Tags => Set<Tag>();
     public DbSet<TaskTag> TaskTags => Set<TaskTag>();
+    public DbSet<OrganizationReview> OrganizationReviews => Set<OrganizationReview>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -42,7 +43,7 @@ public class AppDbContext : DbContext
                 Id = 1,
                 FullName = "Adam",
                 Email = "adam@fursa.com",
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin123!"),
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword("Adam123"),
                 Role = "admin",
                 TakingVolunteeringCourse = false,
                 IsBlocked = false,
@@ -62,6 +63,7 @@ public class AppDbContext : DbContext
             e.Property(o => o.PasswordHash).HasMaxLength(255).IsRequired();
             e.Property(o => o.PhoneNumber).HasMaxLength(20);
             e.Property(o => o.LogoUrl).HasMaxLength(500);
+            e.Property(o => o.Description).HasMaxLength(1000);
             e.Property(o => o.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
         });
 
@@ -160,6 +162,28 @@ public class AppDbContext : DbContext
              .WithMany(t => t.TaskTags)
              .HasForeignKey(tt => tt.TagId)
              .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // ── OrganizationReview ──────────────────────────────────────
+        modelBuilder.Entity<OrganizationReview>(e =>
+        {
+            e.ToTable("organization_reviews");
+
+            e.Property(r => r.Rating).IsRequired();
+            e.Property(r => r.Comment).HasMaxLength(1000);
+            e.Property(r => r.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+            e.HasOne(r => r.Organization)
+             .WithMany(o => o.Reviews)
+             .HasForeignKey(r => r.OrganizationId)
+             .OnDelete(DeleteBehavior.Cascade);
+
+            e.HasOne(r => r.User)
+             .WithMany(u => u.OrganizationReviews)
+             .HasForeignKey(r => r.UserId)
+             .OnDelete(DeleteBehavior.Cascade);
+
+            e.HasIndex(r => new { r.OrganizationId, r.UserId }).IsUnique();
         });
     }
 }

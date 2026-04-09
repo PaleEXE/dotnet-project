@@ -10,6 +10,8 @@ import MyApplications from './pages/MyApplications';
 import MyTasks from './pages/MyTasks';
 import Profile from './pages/Profile';
 import AdminPanel from './pages/AdminPanel';
+import Organizations from './pages/Organizations';
+import OrganizationProfile from './pages/OrganizationProfile';
 
 const API = 'http://localhost:5001';
 
@@ -62,6 +64,7 @@ function App() {
               <Link to="/" className="text-white font-bold text-xl tracking-tight">Fursa</Link>
               <div className="hidden md:flex space-x-2">
                 <Link to="/" className="text-emerald-50 hover:bg-emerald-800 px-3 py-2 rounded-md font-medium transition-colors">Home</Link>
+                <Link to="/organizations" className="text-emerald-50 hover:bg-emerald-800 px-3 py-2 rounded-md font-medium transition-colors">Organizations</Link>
                 {isStudent && <Link to="/my-applications" className="text-emerald-50 hover:bg-emerald-800 px-3 py-2 rounded-md font-medium transition-colors">My Volunteering</Link>}
                 {isStudent && <Link to="/profile" className="text-emerald-50 hover:bg-emerald-800 px-3 py-2 rounded-md font-medium transition-colors">Profile</Link>}
                 {isOrg && <Link to="/my-tasks" className="text-emerald-50 hover:bg-emerald-800 px-3 py-2 rounded-md font-medium transition-colors">My Tasks</Link>}
@@ -92,6 +95,8 @@ function App() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <Routes>
           <Route path="/" element={<Home user={user} token={token} />} />
+          <Route path="/organizations" element={<Organizations />} />
+          <Route path="/organizations/:id" element={<OrganizationProfile user={user} token={token} />} />
           {isOrg && <Route path="/tasks/new" element={<PostTask user={user} token={token} />} />}
           <Route path="/tasks/:id" element={<TaskDetail user={user} token={token} />} />
           {isStudent && <Route path="/my-applications" element={<MyApplications user={user} token={token} />} />}

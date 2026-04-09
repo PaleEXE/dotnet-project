@@ -69,5 +69,6 @@ app.MapTagEndpoints();
 app.MapTaskImageEndpoints();
 app.MapUploadEndpoints();
 app.MapAdminEndpoints();
+app.MapReviewEndpoints();
 
 app.Run();

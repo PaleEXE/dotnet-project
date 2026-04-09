@@ -50,6 +50,39 @@ public static class HoursApi
             return Results.Created($"/hours/{hour.Id}", hour);
         });
 
+        // POST /hours/org — organization logs hours for a volunteer on their task
+        app.MapPost("/hours/org", async (OrgLogHoursRequest req, AppDbContext db) =>
+        {
+            if (req.OrganizationId <= 0) return Results.BadRequest(new { message = "OrganizationId is required" });
+            if (req.TaskId <= 0) return Results.BadRequest(new { message = "TaskId is required" });
+            if (req.UserId <= 0) return Results.BadRequest(new { message = "UserId is required" });
+            if (req.HoursWorked <= 0) return Results.BadRequest(new { message = "HoursWorked must be greater than 0" });
+
+            // Verify the org owns the task
+            var task = await db.Tasks.FindAsync(req.TaskId);
+            if (task is null) return Results.NotFound(new { message = "Task not found" });
+            if (task.OrganizationId != req.OrganizationId)
+                return Results.Json(new { message = "You can only log hours for your own tasks" }, statusCode: 403);
+
+            // Verify the user is an approved volunteer on the task
+            var volunteer = await db.TaskVolunteers
+                .FirstOrDefaultAsync(v => v.TaskId == req.TaskId && v.UserId == req.UserId && v.Status == "approved");
+            if (volunteer is null)
+                return Results.BadRequest(new { message = "User is not an approved volunteer on this task" });
+
+            var hour = new VolunteerHour
+            {
+                TaskId = req.TaskId,
+                UserId = req.UserId,
+                HoursWorked = req.HoursWorked,
+                Notes = req.Notes
+            };
+
+            db.VolunteerHours.Add(hour);
+            await db.SaveChangesAsync();
+            return Results.Created($"/hours/{hour.Id}", hour);
+        });
+
         // PUT /hours/{id}
         app.MapPut("/hours/{id}", async (int id, VolunteerHour input, AppDbContext db) =>
         {
@@ -74,4 +107,13 @@ public static class HoursApi
             return Results.NoContent();
         });
     }
+}
+
+public class OrgLogHoursRequest
+{
+    public int OrganizationId { get; set; }
+    public int TaskId { get; set; }
+    public int UserId { get; set; }
+    public decimal HoursWorked { get; set; }
+    public string? Notes { get; set; }
 }

@@ -8,8 +8,10 @@ public class Organization
     public string PasswordHash { get; set; } = null!;
     public string? PhoneNumber { get; set; }
     public string? LogoUrl { get; set; }
+    public string? Description { get; set; }
     public DateTime CreatedAt { get; set; }
 
     // Navigation
     public ICollection<Task> Tasks { get; set; } = new List<Task>();
+    public ICollection<OrganizationReview> Reviews { get; set; } = new List<OrganizationReview>();
 }
