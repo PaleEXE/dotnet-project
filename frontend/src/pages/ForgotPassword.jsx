@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { API } from '../App';
+import { useI18n } from '../i18n/I18nContext';
 
 export default function ForgotPassword() {
+  const { t } = useI18n();
   const [email, setEmail] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [universityId, setUniversityId] = useState('');
@@ -24,37 +26,37 @@ export default function ForgotPassword() {
 
     const data = await res.json();
     if (!res.ok) {
-      setError(data.message || 'Password reset failed');
+      setError(data.message || t('forgotPassword.failed'));
       return;
     }
 
-    setSuccess(data.message);
+    setSuccess(t('forgotPassword.success'));
     setTimeout(() => {
       navigate('/login');
     }, 2000);
   };
 
   return (
-    <div className="w-full max-w-md bg-white rounded-xl shadow-lg border border-slate-100 p-8">
+    <div className="w-full max-w-md bg-white rounded-xl shadow-lg border border-slate-100 p-8 animate-scale-in">
       <div className="text-center mb-8">
-        <h1 className="text-2xl font-bold text-slate-800 mb-2">Reset Password</h1>
-        <p className="text-slate-500 text-sm">Enter your details to reset your password</p>
+        <h1 className="text-2xl font-bold text-slate-800 mb-2">{t('forgotPassword.title')}</h1>
+        <p className="text-slate-500 text-sm">{t('forgotPassword.subtitle')}</p>
       </div>
 
       {error && (
-        <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded-r-md">
+        <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded-r-md error-banner">
           <p className="text-sm text-red-700 font-medium">{error}</p>
         </div>
       )}
       {success && (
-        <div className="bg-emerald-50 border-l-4 border-emerald-500 p-4 mb-6 rounded-r-md">
+        <div className="bg-emerald-50 border-l-4 border-emerald-500 p-4 mb-6 rounded-r-md animate-slide-up">
           <p className="text-sm text-emerald-700 font-medium">{success}</p>
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
-          <label className="block text-sm font-semibold text-slate-700 mb-1.5">Email</label>
+          <label className="block text-sm font-semibold text-slate-700 mb-1.5">{t('forgotPassword.email')}</label>
           <input 
             type="email" 
             value={email} 
@@ -65,7 +67,7 @@ export default function ForgotPassword() {
           />
         </div>
         <div>
-          <label className="block text-sm font-semibold text-slate-700 mb-1.5">Phone Number</label>
+          <label className="block text-sm font-semibold text-slate-700 mb-1.5">{t('forgotPassword.phone')}</label>
           <input 
             type="tel" 
             value={phoneNumber} 
@@ -76,7 +78,7 @@ export default function ForgotPassword() {
           />
         </div>
         <div>
-          <label className="block text-sm font-semibold text-slate-700 mb-1.5">University ID</label>
+          <label className="block text-sm font-semibold text-slate-700 mb-1.5">{t('forgotPassword.universityId')}</label>
           <input 
             type="text" 
             value={universityId} 
@@ -87,7 +89,7 @@ export default function ForgotPassword() {
           />
         </div>
         <div>
-          <label className="block text-sm font-semibold text-slate-700 mb-1.5">New Password</label>
+          <label className="block text-sm font-semibold text-slate-700 mb-1.5">{t('forgotPassword.newPassword')}</label>
           <input 
             type="password" 
             value={newPassword} 
@@ -103,15 +105,15 @@ export default function ForgotPassword() {
           type="submit" 
           className="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
         >
-          Reset Password
+          {t('forgotPassword.submit')}
         </button>
       </form>
       
       <div className="mt-8 text-center border-t border-slate-100 pt-6">
         <p className="text-sm text-slate-500">
-          Remember your password?{' '}
+          {t('forgotPassword.backToLogin')}{' '}
           <Link to="/login" className="font-semibold text-emerald-600 hover:text-emerald-700 transition-colors">
-            Sign In
+            {t('login.submit')}
           </Link>
         </p>
       </div>

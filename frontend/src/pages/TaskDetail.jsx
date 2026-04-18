@@ -1,8 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { API } from '../App';
+import { useI18n } from '../i18n/I18nContext';
+import ProfileAvatar from '../components/ProfileAvatar';
+import TaskImageGallery from '../components/TaskImageGallery';
 
 export default function TaskDetail({ user }) {
+  const { t } = useI18n();
   const { id } = useParams();
   const [task, setTask] = useState(null);
   const [volunteers, setVolunteers] = useState([]);
@@ -39,11 +43,11 @@ export default function TaskDetail({ user }) {
     });
     if (res.ok) {
       setAlreadyApplied(true);
-      setMessage('Volunteer application submitted!');
+      setMessage(t('taskDetail.applicationSubmitted'));
       fetch(`${API}/volunteers/task/${id}`).then(r => r.json()).then(setVolunteers);
     } else {
       const data = await res.json();
-      setMessage(data.message || 'Failed to apply');
+      setMessage(data.message || t('taskDetail.applicationFailed'));
     }
   };
 
@@ -71,39 +75,28 @@ export default function TaskDetail({ user }) {
     });
 
     if (res.ok) {
-      setMessage('Hours logged successfully!');
+      setMessage(t('taskDetail.hoursLoggedSuccess'));
       setLogFormUserId(null);
       setLogHours('');
       setLogNotes('');
       loadHoursLog();
     } else {
       const data = await res.json();
-      setMessage(data.message || 'Failed to log hours');
+      setMessage(data.message || t('taskDetail.hoursLoggedFailed'));
     }
   };
 
   const getVolunteerHours = (userId) => hoursLog.filter(h => h.userId === userId);
 
-  if (!task) return <div className="py-20 text-center text-slate-500 font-medium">Loading task details...</div>;
+  if (!task) return <div className="py-20 text-center text-slate-500 font-medium">{t('taskDetail.loading')}</div>;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 animate-fade-in">
       
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
         {/* Cover Images */}
         {task.taskImages && task.taskImages.length > 0 && (
-          <div className="h-64 w-full bg-slate-100 border-b border-slate-200 overflow-hidden relative">
-            <div className="flex h-full w-full overflow-x-auto snap-x">
-              {task.taskImages.map(img => (
-                <img key={img.id} src={img.imageUrl} alt="Task visual" className="h-full object-cover min-w-full snap-start" />
-              ))}
-            </div>
-            {task.taskImages.length > 1 && (
-               <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded">
-                 {task.taskImages.length} images
-               </div>
-            )}
-          </div>
+          <TaskImageGallery images={task.taskImages} mode="detail" />
         )}
 
         <div className="p-8">
@@ -135,7 +128,7 @@ export default function TaskDetail({ user }) {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-8 bg-slate-50 p-6 rounded-lg border border-slate-100">
             {task.organization && (
               <div>
-                <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-1">Organization</p>
+                <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-1">{t('taskDetail.organization')}</p>
                 <Link to={`/organizations/${task.organizationId}`} className="font-medium text-emerald-700 hover:text-emerald-800 transition-colors">
                   {task.organization.name}
                 </Link>
@@ -143,19 +136,19 @@ export default function TaskDetail({ user }) {
             )}
             {task.maxVolunteers && (
               <div>
-                <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-1">Volunteers Needed</p>
+                <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-1">{t('taskDetail.volunteersNeeded')}</p>
                 <p className="font-medium text-slate-900">{task.maxVolunteers}</p>
               </div>
             )}
             {task.startDate && (
               <div>
-                <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-1">Start Date</p>
+                <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-1">{t('taskDetail.startDate')}</p>
                 <p className="font-medium text-slate-900">{new Date(task.startDate).toLocaleDateString()}</p>
               </div>
             )}
             {task.endDate && (
               <div>
-                <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-1">End Date</p>
+                <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-1">{t('taskDetail.endDate')}</p>
                 <p className="font-medium text-slate-900">{new Date(task.endDate).toLocaleDateString()}</p>
               </div>
             )}
@@ -164,7 +157,7 @@ export default function TaskDetail({ user }) {
       </div>
 
       {message && (
-         <div className="bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded-r-md">
+         <div className="bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded-r-md animate-slide-up">
            <p className="text-sm text-emerald-700 font-medium">{message}</p>
          </div>
       )}
@@ -175,42 +168,49 @@ export default function TaskDetail({ user }) {
           className="w-full sm:w-auto px-8 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg shadow-sm transition-colors text-lg"
           onClick={handleApply}
         >
-          Volunteer for this Task
+          {t('taskDetail.volunteerBtn')}
         </button>
       )}
       
       {user.role === 'student' && alreadyApplied && (
         <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 p-4 rounded-lg flex items-center">
-          <svg className="w-6 h-6 mr-3 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-          <span className="font-medium">You are actively volunteering for this task.</span>
+          <svg className="w-6 h-6 mr-3 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          <span className="font-medium">{t('taskDetail.alreadyApplied')}</span>
         </div>
       )}
 
       {/* Volunteers List for Organizations */}
       {user.role === 'organization' && (
         <div className="pt-6">
-          <h2 className="text-2xl font-bold text-slate-900 mb-6 border-b border-slate-200 pb-2">Registered Volunteers ({volunteers.length})</h2>
+          <h2 className="text-2xl font-bold text-slate-900 mb-6 border-b border-slate-200 pb-2">{t('taskDetail.volunteersTitle')} ({volunteers.length})</h2>
           
           {volunteers.length === 0 ? (
-            <p className="text-slate-500 italic">No volunteers have registered yet.</p>
+            <p className="text-slate-500 italic">{t('taskDetail.noVolunteers')}</p>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-4 stagger-children">
               {volunteers.map(v => {
                 const vHours = getVolunteerHours(v.userId);
                 const totalHours = vHours.reduce((s, h) => s + h.hoursWorked, 0);
 
                 return (
-                  <div key={v.id} className="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
+                  <div key={v.id} className="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden animate-slide-up">
                     <div className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                      <div>
-                        <p className="font-bold text-slate-800 text-lg">{v.user?.fullName || `User #${v.userId}`}</p>
-                        <p className="text-sm text-slate-500 mt-1">Applied: {new Date(v.joinedAt).toLocaleDateString()}</p>
-                        {totalHours > 0 && (
-                          <p className="text-sm text-emerald-600 font-semibold mt-1 flex items-center gap-1">
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            {totalHours.toFixed(1)} hours logged
-                          </p>
-                        )}
+                      <div className="flex items-center gap-3">
+                        <ProfileAvatar
+                          src={v.user?.profilePictureUrl}
+                          name={v.user?.fullName || `User #${v.userId}`}
+                          size="md"
+                        />
+                        <div>
+                          <p className="font-bold text-slate-800 text-lg">{v.user?.fullName || `User #${v.userId}`}</p>
+                          <p className="text-sm text-slate-500 mt-1">{t('taskDetail.applied')}: {new Date(v.joinedAt).toLocaleDateString()}</p>
+                          {totalHours > 0 && (
+                            <p className="text-sm text-emerald-600 font-semibold mt-1 flex items-center gap-1">
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                              {totalHours.toFixed(1)} {t('taskDetail.hoursLogged')}
+                            </p>
+                          )}
+                        </div>
                       </div>
                       
                       <div className="flex items-center gap-4">
@@ -228,13 +228,13 @@ export default function TaskDetail({ user }) {
                               onClick={() => handleStatus(v.id, 'approved')}
                               className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded transition-colors"
                             >
-                              Approve
+                              {t('taskDetail.approve')}
                             </button>
                             <button 
                               onClick={() => handleStatus(v.id, 'rejected')}
                               className="px-3 py-1.5 bg-white border border-red-300 text-red-700 hover:bg-red-50 text-sm font-semibold rounded transition-colors"
                             >
-                              Reject
+                              {t('taskDetail.reject')}
                             </button>
                           </div>
                         )}
@@ -245,7 +245,7 @@ export default function TaskDetail({ user }) {
                             className="px-3 py-1.5 bg-slate-100 hover:bg-emerald-50 text-emerald-700 border border-slate-200 hover:border-emerald-200 text-sm font-semibold rounded transition-colors flex items-center gap-1.5"
                           >
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-                            Log Hours
+                            {t('taskDetail.logHours')}
                           </button>
                         )}
                       </div>
@@ -253,13 +253,13 @@ export default function TaskDetail({ user }) {
 
                     {/* Log Hours Form (inline, for this volunteer) */}
                     {logFormUserId === v.userId && (
-                      <div className="border-t border-slate-200 bg-slate-50 p-5">
+                      <div className="border-t border-slate-200 bg-slate-50 p-5 animate-slide-down">
                         <h4 className="text-sm font-bold text-slate-800 mb-4 uppercase tracking-wider">
-                          Log Hours for {v.user?.fullName || `User #${v.userId}`}
+                          {t('taskDetail.logHoursFor')} {v.user?.fullName || `User #${v.userId}`}
                         </h4>
                         <div className="flex flex-col sm:flex-row gap-4">
                           <div className="flex-1">
-                            <label className="block text-xs font-semibold text-slate-700 mb-1">Hours Worked</label>
+                            <label className="block text-xs font-semibold text-slate-700 mb-1">{t('taskDetail.hoursWorked')}</label>
                             <input
                               type="number"
                               step="0.5"
@@ -271,12 +271,12 @@ export default function TaskDetail({ user }) {
                             />
                           </div>
                           <div className="flex-[2]">
-                            <label className="block text-xs font-semibold text-slate-700 mb-1">Note (Optional)</label>
+                            <label className="block text-xs font-semibold text-slate-700 mb-1">{t('taskDetail.noteOptional')}</label>
                             <input
                               type="text"
                               value={logNotes}
                               onChange={e => setLogNotes(e.target.value)}
-                              placeholder="What did they work on?"
+                              placeholder={t('taskDetail.notePlaceholder')}
                               className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-emerald-500 focus:border-emerald-500 text-sm"
                             />
                           </div>
@@ -286,13 +286,13 @@ export default function TaskDetail({ user }) {
                             onClick={() => handleLogHours(v.userId)}
                             className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-md transition-colors"
                           >
-                            Submit Hours
+                            {t('taskDetail.submitHours')}
                           </button>
                           <button
                             onClick={() => setLogFormUserId(null)}
                             className="px-4 py-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-sm font-semibold rounded-md transition-colors"
                           >
-                            Cancel
+                            {t('taskDetail.cancel')}
                           </button>
                         </div>
                       </div>

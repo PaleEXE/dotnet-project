@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { API } from '../App';
+import { useI18n } from '../i18n/I18nContext';
+import ProfileAvatar from '../components/ProfileAvatar';
 
 export default function OrganizationProfile({ user }) {
+  const { t } = useI18n();
   const { id } = useParams();
   const [org, setOrg] = useState(null);
   const [reviews, setReviews] = useState([]);
@@ -24,7 +27,7 @@ export default function OrganizationProfile({ user }) {
   const handleSubmitReview = async () => {
     setMessage('');
     if (rating === 0) {
-      setMessage('Please select a star rating');
+      setMessage(t('orgProfile.yourRating'));
       setMessageType('error');
       return;
     }
@@ -41,7 +44,7 @@ export default function OrganizationProfile({ user }) {
     });
 
     if (res.ok) {
-      setMessage('Review submitted successfully!');
+      setMessage(t('orgProfile.reviewSubmitted'));
       setMessageType('success');
       setRating(0);
       setComment('');
@@ -50,7 +53,7 @@ export default function OrganizationProfile({ user }) {
       fetch(`${API}/organizations/${id}`).then(r => r.json()).then(setOrg);
     } else {
       const data = await res.json();
-      setMessage(data.message || 'Failed to submit review');
+      setMessage(data.message || t('orgProfile.reviewFailed'));
       setMessageType('error');
     }
   };
@@ -65,7 +68,7 @@ export default function OrganizationProfile({ user }) {
     }
   };
 
-  if (!org) return <div className="py-20 text-center text-slate-500 font-medium">Loading organization...</div>;
+  if (!org) return <div className="py-20 text-center text-slate-500 font-medium">{t('orgProfile.loading')}</div>;
 
   const isStudent = user.role === 'student' || user.role === 'admin';
   const alreadyReviewed = reviews.some(r => r.userId === user.id);
@@ -91,11 +94,11 @@ export default function OrganizationProfile({ user }) {
   );
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
+    <div className="max-w-4xl mx-auto space-y-8 animate-fade-in">
       {/* Back Link */}
       <Link to="/organizations" className="inline-flex items-center text-sm text-slate-500 hover:text-emerald-700 transition-colors font-medium">
         <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path></svg>
-        All Organizations
+        {t('organizations.title')}
       </Link>
 
       {/* Hero Card */}
@@ -103,19 +106,22 @@ export default function OrganizationProfile({ user }) {
         <div className="bg-gradient-to-r from-emerald-600 to-emerald-700 h-32"></div>
         <div className="px-8 pb-8 -mt-12">
           <div className="flex items-end gap-6 mb-6">
-            {org.logoUrl ? (
-              <img src={org.logoUrl} alt={org.name} className="w-24 h-24 rounded-xl object-cover border-4 border-white shadow-lg" />
-            ) : (
-              <div className="w-24 h-24 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-3xl border-4 border-white shadow-lg">
-                {org.name.charAt(0).toUpperCase()}
-              </div>
-            )}
+            <div className="border-4 border-white rounded-xl shadow-lg overflow-hidden shrink-0">
+              <ProfileAvatar
+                src={org.logoUrl}
+                name={org.name}
+                size="xl"
+                clickable={!!org.logoUrl}
+                className="!rounded-none"
+                borderColor="border-transparent"
+              />
+            </div>
             <div className="pb-1">
               <h1 className="text-3xl font-bold text-slate-900 tracking-tight">{org.name}</h1>
               <div className="flex items-center gap-3 mt-2">
                 <StarRating value={Math.round(org.averageRating)} size="w-5 h-5" />
                 <span className="text-sm text-slate-500 font-medium">
-                  {org.averageRating > 0 ? `${org.averageRating} / 5` : 'No ratings yet'}
+                  {org.averageRating > 0 ? `${org.averageRating} / 5` : t('organizations.noRatings')}
                   {org.reviewCount > 0 && ` · ${org.reviewCount} review${org.reviewCount !== 1 ? 's' : ''}`}
                 </span>
               </div>
@@ -128,17 +134,17 @@ export default function OrganizationProfile({ user }) {
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="bg-slate-50 rounded-lg p-4 border border-slate-100">
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Email</p>
+              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">{t('orgProfile.email')}</p>
               <p className="text-sm font-medium text-slate-800 truncate">{org.email}</p>
             </div>
             {org.phoneNumber && (
               <div className="bg-slate-50 rounded-lg p-4 border border-slate-100">
-                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Phone</p>
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">{t('orgProfile.phone')}</p>
                 <p className="text-sm font-medium text-slate-800">{org.phoneNumber}</p>
               </div>
             )}
             <div className="bg-slate-50 rounded-lg p-4 border border-slate-100">
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Tasks Posted</p>
+              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">{t('orgProfile.tasks')}</p>
               <p className="text-sm font-medium text-slate-800">{org.taskCount}</p>
             </div>
           </div>
@@ -148,25 +154,25 @@ export default function OrganizationProfile({ user }) {
       {/* Tasks Section */}
       {org.tasks && org.tasks.length > 0 && (
         <div>
-          <h2 className="text-2xl font-bold text-slate-900 mb-4">Tasks</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {org.tasks.map(t => (
+          <h2 className="text-2xl font-bold text-slate-900 mb-4">{t('orgProfile.tasks')}</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 stagger-children">
+            {org.tasks.map(task => (
               <Link
-                key={t.id}
-                to={`/tasks/${t.id}`}
-                className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 hover:shadow-md transition-all hover:-translate-y-0.5 group"
+                key={task.id}
+                to={`/tasks/${task.id}`}
+                className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 card-hover group animate-fade-in"
               >
                 <div className="flex justify-between items-start mb-2">
-                  <h3 className="font-bold text-slate-800 group-hover:text-emerald-700 transition-colors line-clamp-1">{t.title}</h3>
+                  <h3 className="font-bold text-slate-800 group-hover:text-emerald-700 transition-colors line-clamp-1">{task.title}</h3>
                   <span className={`px-2 py-0.5 text-xs font-bold uppercase rounded-full shrink-0 ml-2 ${
-                    t.status === 'open' ? 'bg-emerald-100 text-emerald-800' :
-                    t.status === 'closed' ? 'bg-red-100 text-red-800' :
+                    task.status === 'open' ? 'bg-emerald-100 text-emerald-800' :
+                    task.status === 'closed' ? 'bg-red-100 text-red-800' :
                     'bg-blue-100 text-blue-800'
                   }`}>
-                    {t.status}
+                    {task.status}
                   </span>
                 </div>
-                {t.description && <p className="text-sm text-slate-600 line-clamp-2">{t.description}</p>}
+                {task.description && <p className="text-sm text-slate-600 line-clamp-2">{task.description}</p>}
               </Link>
             ))}
           </div>
@@ -175,10 +181,10 @@ export default function OrganizationProfile({ user }) {
 
       {/* Reviews Section */}
       <div>
-        <h2 className="text-2xl font-bold text-slate-900 mb-6">Reviews</h2>
+        <h2 className="text-2xl font-bold text-slate-900 mb-6">{t('orgProfile.reviews')}</h2>
 
         {message && (
-          <div className={`border-l-4 p-4 mb-6 rounded-r-md ${
+          <div className={`border-l-4 p-4 mb-6 rounded-r-md animate-slide-up ${
             messageType === 'success' ? 'bg-emerald-50 border-emerald-500' : 'bg-red-50 border-red-500'
           }`}>
             <p className={`text-sm font-medium ${messageType === 'success' ? 'text-emerald-700' : 'text-red-700'}`}>{message}</p>
@@ -188,22 +194,22 @@ export default function OrganizationProfile({ user }) {
         {/* Submit Review Form */}
         {isStudent && !alreadyReviewed && (
           <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
-            <h3 className="text-lg font-bold text-slate-800 mb-4">Leave a Review</h3>
+            <h3 className="text-lg font-bold text-slate-800 mb-4">{t('orgProfile.writeReview')}</h3>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Your Rating</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">{t('orgProfile.yourRating')}</label>
                 <StarRating
                   interactive={true}
                   size="w-8 h-8"
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1">Comment (Optional)</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-1">{t('orgProfile.comment')}</label>
                 <textarea
                   value={comment}
                   onChange={e => setComment(e.target.value)}
                   rows="3"
-                  placeholder="Share your experience with this organization..."
+                  placeholder={t('orgProfile.commentPlaceholder')}
                   className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm"
                 />
               </div>
@@ -211,7 +217,7 @@ export default function OrganizationProfile({ user }) {
                 onClick={handleSubmitReview}
                 className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg transition-colors text-sm"
               >
-                Submit Review
+                {t('orgProfile.submitReview')}
               </button>
             </div>
           </div>
@@ -219,7 +225,7 @@ export default function OrganizationProfile({ user }) {
 
         {isStudent && alreadyReviewed && (
           <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 p-4 rounded-lg mb-6 flex items-center">
-            <svg className="w-5 h-5 mr-2 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <svg className="w-5 h-5 mr-2 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             <span className="font-medium text-sm">You've already reviewed this organization.</span>
           </div>
         )}
@@ -227,21 +233,19 @@ export default function OrganizationProfile({ user }) {
         {/* Reviews List */}
         {reviews.length === 0 ? (
           <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-8 text-center">
-            <p className="text-slate-500">No reviews yet. Be the first to share your experience!</p>
+            <p className="text-slate-500">{t('orgProfile.noReviews')}</p>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-4 stagger-children">
             {reviews.map(r => (
-              <div key={r.id} className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+              <div key={r.id} className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 animate-fade-in">
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex items-center gap-3">
-                    {r.userPicture ? (
-                      <img src={r.userPicture} alt={r.userName} className="w-9 h-9 rounded-full object-cover border border-slate-200" />
-                    ) : (
-                      <div className="w-9 h-9 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-sm border border-emerald-200">
-                        {(r.userName || '?').charAt(0).toUpperCase()}
-                      </div>
-                    )}
+                    <ProfileAvatar
+                      src={r.userPicture}
+                      name={r.userName || '?'}
+                      size="sm"
+                    />
                     <div>
                       <p className="font-semibold text-slate-800 text-sm">{r.userName}</p>
                       <p className="text-xs text-slate-400">{new Date(r.createdAt).toLocaleDateString()}</p>

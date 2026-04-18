@@ -69,6 +69,17 @@ public static class AdminApi
             return Results.NoContent();
         });
 
+        // PUT /admin/organizations/{id}/toggle-approval
+        app.MapPut("/admin/organizations/{id}/toggle-approval", async (int id, AppDbContext db) =>
+        {
+            var org = await db.Organizations.FindAsync(id);
+            if (org is null) return Results.NotFound(new { message = "Organization not found" });
+
+            org.IsApproved = !org.IsApproved;
+            await db.SaveChangesAsync();
+            return Results.Ok(new { org.Id, org.IsApproved });
+        });
+
         // DELETE /admin/organizations/{id}
         app.MapDelete("/admin/organizations/{id}", async (int id, AppDbContext db) =>
         {

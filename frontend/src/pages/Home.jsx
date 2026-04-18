@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { API } from '../App';
+import { useI18n } from '../i18n/I18nContext';
+import TaskImageGallery from '../components/TaskImageGallery';
 
 export default function Home({ user }) {
+  const { t } = useI18n();
   const [tasks, setTasks] = useState([]);
 
   useEffect(() => {
@@ -17,50 +20,55 @@ export default function Home({ user }) {
     }
   }, [user]);
 
-  const TaskCard = ({ t }) => (
-    <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-shadow">
+  const TaskCard = ({ t: task }) => (
+    <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden card-hover animate-fade-in">
+      {/* Image thumbnail */}
+      {task.taskImages && task.taskImages.length > 0 && (
+        <TaskImageGallery images={task.taskImages} mode="card" />
+      )}
+
       <div className="p-6">
         <div className="flex justify-between items-start mb-4">
           <h3 className="text-xl font-bold text-slate-800">
-            <Link to={`/tasks/${t.id}`} className="hover:text-emerald-700 transition-colors">
-              {t.title}
+            <Link to={`/tasks/${task.id}`} className="hover:text-emerald-700 transition-colors">
+              {task.title}
             </Link>
           </h3>
           {user.role === 'organization' && (
             <span className={`px-2.5 py-1 text-xs font-bold uppercase rounded-full ${
-              t.status === 'open' ? 'bg-emerald-100 text-emerald-800' : 
-              t.status === 'closed' ? 'bg-red-100 text-red-800' : 
+              task.status === 'open' ? 'bg-emerald-100 text-emerald-800' : 
+              task.status === 'closed' ? 'bg-red-100 text-red-800' : 
               'bg-blue-100 text-blue-800'
             }`}>
-              {t.status}
+              {task.status}
             </span>
           )}
         </div>
         
-        <p className="text-slate-600 mb-6 line-clamp-3">{t.description}</p>
+        <p className="text-slate-600 mb-6 line-clamp-3">{task.description}</p>
         
         <div className="flex flex-col space-y-2 mb-6">
-          {(t.startDate || t.endDate) && (
+          {(task.startDate || task.endDate) && (
             <div className="flex items-center text-sm text-slate-500">
-              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+              <svg className="w-4 h-4 mr-2 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
               <span>
-                {t.startDate && new Date(t.startDate).toLocaleDateString()} 
-                {t.startDate && t.endDate && ' — '} 
-                {t.endDate && new Date(t.endDate).toLocaleDateString()}
+                {task.startDate && new Date(task.startDate).toLocaleDateString()} 
+                {task.startDate && task.endDate && ' — '} 
+                {task.endDate && new Date(task.endDate).toLocaleDateString()}
               </span>
             </div>
           )}
-          {t.maxVolunteers && (
+          {task.maxVolunteers && (
             <div className="flex items-center text-sm text-slate-500">
-              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-              <span>Volunteers needed: {t.maxVolunteers}</span>
+              <svg className="w-4 h-4 mr-2 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+              <span>{t('home.volunteersNeeded')}: {task.maxVolunteers}</span>
             </div>
           )}
         </div>
 
-        {t.taskTags && t.taskTags.length > 0 && (
+        {task.taskTags && task.taskTags.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-6">
-            {t.taskTags.map(tt => (
+            {task.taskTags.map(tt => (
               <span key={tt.tagId} className="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-xs font-semibold">
                 {tt.tag.name}
               </span>
@@ -70,10 +78,10 @@ export default function Home({ user }) {
 
         <div className="pt-2">
           <Link 
-            to={`/tasks/${t.id}`} 
+            to={`/tasks/${task.id}`} 
             className="inline-flex w-full justify-center items-center bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 px-4 py-2 mt-2 rounded-lg text-sm font-semibold transition-colors"
           >
-            View Details
+            {t('home.viewDetails')}
           </Link>
         </div>
       </div>
@@ -81,10 +89,10 @@ export default function Home({ user }) {
   );
 
   return (
-    <div>
+    <div className="animate-fade-in">
       <div className="flex flex-col sm:flex-row justify-between items-baseline mb-8">
         <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
-          {user.role === 'organization' ? "My Organization's Tasks" : "Open Volunteer Tasks"}
+          {user.role === 'organization' ? t('home.orgTitle') : t('home.studentTitle')}
         </h1>
         {user.role === 'organization' && (
           <Link 
@@ -92,20 +100,20 @@ export default function Home({ user }) {
             className="mt-4 sm:mt-0 inline-flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg shadow-sm transition-colors"
           >
             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
-            Post New Task
+            {t('home.postNewTask')}
           </Link>
         )}
       </div>
 
       {tasks.length === 0 ? (
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-12 text-center">
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-12 text-center animate-fade-in">
           <p className="text-slate-500 text-lg">
-            {user.role === 'organization' ? "You haven't posted any tasks yet." : "No open tasks right now."}
+            {user.role === 'organization' ? t('home.noTasksOrg') : t('home.noTasksStudent')}
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {tasks.map(t => <TaskCard key={t.id} t={t} />)}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 stagger-children">
+          {tasks.map(task => <TaskCard key={task.id} t={task} />)}
         </div>
       )}
     </div>

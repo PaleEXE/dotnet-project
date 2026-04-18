@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { API } from '../App';
+import { useI18n } from '../i18n/I18nContext';
+import ProfileAvatar from '../components/ProfileAvatar';
 
 export default function Organizations() {
+  const { t } = useI18n();
   const [orgs, setOrgs] = useState([]);
   const [search, setSearch] = useState('');
 
@@ -27,10 +30,10 @@ export default function Organizations() {
   );
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="max-w-6xl mx-auto animate-fade-in">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Organizations</h1>
-        <p className="text-slate-500 mt-2">Browse volunteering organizations and see what they offer</p>
+        <h1 className="text-3xl font-bold text-slate-900 tracking-tight">{t('organizations.title')}</h1>
+        <p className="text-slate-500 mt-2">{t('organizations.subtitle')}</p>
       </div>
 
       {/* Search */}
@@ -41,7 +44,7 @@ export default function Organizations() {
           </svg>
           <input
             type="text"
-            placeholder="Search organizations..."
+            placeholder={t('organizations.searchPlaceholder')}
             value={search}
             onChange={e => setSearch(e.target.value)}
             className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm bg-white"
@@ -54,25 +57,25 @@ export default function Organizations() {
           <svg className="w-12 h-12 text-slate-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
           </svg>
-          <p className="text-slate-500 text-lg">No organizations found.</p>
+          <p className="text-slate-500 text-lg">{t('organizations.noOrgs')}</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 stagger-children">
           {filtered.map(org => (
             <Link
               key={org.id}
               to={`/organizations/${org.id}`}
-              className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-all hover:-translate-y-0.5 group"
+              className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden card-hover group animate-fade-in"
             >
               <div className="p-6">
                 <div className="flex items-center gap-4 mb-4">
-                  {org.logoUrl ? (
-                    <img src={org.logoUrl} alt={org.name} className="w-14 h-14 rounded-xl object-cover border border-slate-200" />
-                  ) : (
-                    <div className="w-14 h-14 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-xl border border-emerald-200">
-                      {org.name.charAt(0).toUpperCase()}
-                    </div>
-                  )}
+                  <ProfileAvatar
+                    src={org.logoUrl}
+                    name={org.name}
+                    size="lg"
+                    clickable={false}
+                    className="!rounded-xl"
+                  />
                   <div className="min-w-0">
                     <h3 className="text-lg font-bold text-slate-800 group-hover:text-emerald-700 transition-colors truncate">{org.name}</h3>
                     <p className="text-sm text-slate-500 truncate">{org.email}</p>
@@ -87,12 +90,12 @@ export default function Organizations() {
                   <div className="flex items-center gap-1.5">
                     <StarDisplay rating={org.averageRating} />
                     <span className="text-xs text-slate-500 ml-1">
-                      {org.averageRating > 0 ? `${org.averageRating}` : 'No ratings'}
+                      {org.averageRating > 0 ? `${org.averageRating}` : t('organizations.noRatings')}
                       {org.reviewCount > 0 && ` (${org.reviewCount})`}
                     </span>
                   </div>
                   <span className="text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded-full font-medium">
-                    {org.taskCount} {org.taskCount === 1 ? 'task' : 'tasks'}
+                    {org.taskCount} {org.taskCount === 1 ? t('organizations.task') : t('organizations.tasks')}
                   </span>
                 </div>
               </div>

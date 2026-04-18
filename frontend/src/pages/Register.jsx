@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { API } from '../App';
+import { useI18n } from '../i18n/I18nContext';
 
 export default function Register({ onLogin }) {
+  const { t } = useI18n();
   const [role, setRole] = useState('student');
   
   // User fields
@@ -41,7 +43,7 @@ export default function Register({ onLogin }) {
 
     const data = await res.json();
     if (!res.ok) {
-      setError(data.message || 'Registration failed');
+      setError(data.message || t('register.failed'));
       return;
     }
 
@@ -62,14 +64,14 @@ export default function Register({ onLogin }) {
   };
 
   return (
-    <div className="w-full max-w-lg bg-white rounded-xl shadow-lg border border-slate-100 p-8 my-8">
+    <div className="w-full max-w-lg bg-white rounded-xl shadow-lg border border-slate-100 p-8 my-8 animate-scale-in">
       <div className="text-center mb-8">
-        <h1 className="text-2xl font-bold text-slate-800 mb-2">Create an Account</h1>
-        <p className="text-slate-500 text-sm">Join Fursa today</p>
+        <h1 className="text-2xl font-bold text-slate-800 mb-2">{t('register.title')}</h1>
+        <p className="text-slate-500 text-sm">{t('register.subtitle')}</p>
       </div>
 
       {error && (
-         <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded-r-md">
+         <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded-r-md error-banner">
            <p className="text-sm text-red-700 font-medium">{error}</p>
          </div>
       )}
@@ -83,20 +85,20 @@ export default function Register({ onLogin }) {
             className={`flex-1 py-2 text-sm font-semibold rounded-md transition-all ${role === 'student' ? 'bg-white shadow-sm text-emerald-700' : 'text-slate-500 hover:text-slate-700'}`}
             onClick={() => setRole('student')}
           >
-            Student Volunteer
+            {t('register.studentTab')}
           </button>
           <button 
             type="button"
             className={`flex-1 py-2 text-sm font-semibold rounded-md transition-all ${role === 'organization' ? 'bg-white shadow-sm text-emerald-700' : 'text-slate-500 hover:text-slate-700'}`}
             onClick={() => setRole('organization')}
           >
-            Organization
+            {t('register.orgTab')}
           </button>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div className="col-span-1 md:col-span-2">
-            <label className="block text-sm font-semibold text-slate-700 mb-1.5">Email Address</label>
+            <label className="block text-sm font-semibold text-slate-700 mb-1.5">{t('register.email')}</label>
             <input 
               type="email" 
               value={email} 
@@ -107,7 +109,7 @@ export default function Register({ onLogin }) {
           </div>
 
           <div className="col-span-1 md:col-span-2">
-            <label className="block text-sm font-semibold text-slate-700 mb-1.5">Password</label>
+            <label className="block text-sm font-semibold text-slate-700 mb-1.5">{t('register.password')}</label>
             <input 
               type="password" 
               value={password} 
@@ -118,7 +120,7 @@ export default function Register({ onLogin }) {
           </div>
 
           <div className="col-span-1 md:col-span-2">
-            <label className="block text-sm font-semibold text-slate-700 mb-1.5">Phone Number</label>
+            <label className="block text-sm font-semibold text-slate-700 mb-1.5">{t('register.phone')}</label>
             <input 
               type="text" 
               value={phoneNumber} 
@@ -130,7 +132,7 @@ export default function Register({ onLogin }) {
           {role === 'student' && (
             <>
               <div className="col-span-1 md:col-span-2">
-                <label className="block text-sm font-semibold text-slate-700 mb-1.5">Full Name</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-1.5">{t('register.fullName')}</label>
                 <input 
                   type="text"
                   value={fullName} 
@@ -141,7 +143,7 @@ export default function Register({ onLogin }) {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1.5">University ID</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-1.5">{t('register.universityId')}</label>
                 <input 
                   type="text"
                   value={universityId} 
@@ -159,7 +161,7 @@ export default function Register({ onLogin }) {
                   className="w-5 h-5 text-emerald-600 border-slate-300 rounded focus:ring-emerald-500 cursor-pointer"
                 />
                 <label htmlFor="vc" className="ml-2 block text-sm font-medium text-slate-700 cursor-pointer">
-                  Taking volunteering course
+                  {t('register.takingCourse')}
                 </label>
               </div>
             </>
@@ -167,7 +169,7 @@ export default function Register({ onLogin }) {
 
           {role === 'organization' && (
             <div className="col-span-1 md:col-span-2">
-              <label className="block text-sm font-semibold text-slate-700 mb-1.5">Organization Name</label>
+              <label className="block text-sm font-semibold text-slate-700 mb-1.5">{t('register.orgName')}</label>
               <input 
                 type="text"
                 value={orgName} 
@@ -184,15 +186,15 @@ export default function Register({ onLogin }) {
           type="submit" 
           className="w-full py-3 px-4 mt-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
         >
-          Create Account
+          {t('register.submit')}
         </button>
       </form>
 
       <div className="mt-8 text-center border-t border-slate-100 pt-6">
         <p className="text-sm text-slate-500">
-          Already have an account?{' '}
+          {t('register.hasAccount')}{' '}
           <Link to="/login" className="font-semibold text-emerald-600 hover:text-emerald-700 transition-colors">
-            Sign in
+            {t('register.loginLink')}
           </Link>
         </p>
       </div>

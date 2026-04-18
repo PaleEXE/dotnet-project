@@ -55,7 +55,8 @@ public static class AuthApi
                 Email = req.Email,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(req.Password),
                 Name = req.Name,
-                PhoneNumber = req.PhoneNumber
+                PhoneNumber = req.PhoneNumber,
+                IsApproved = false
             };
 
             db.Organizations.Add(org);
@@ -85,6 +86,9 @@ public static class AuthApi
             var org = await db.Organizations.FirstOrDefaultAsync(o => o.Email == req.Email);
             if (org != null && BCrypt.Net.BCrypt.Verify(req.Password, org.PasswordHash))
             {
+                if (!org.IsApproved)
+                    return Results.Json(new { message = "Your organization account is pending admin approval." }, statusCode: 403);
+
                 var token = GenerateJwtToken(org.Id.ToString(), org.Email, "organization", config);
                 return Results.Ok(new { token, user = new { org.Id, org.Email, Role = "organization", org.CreatedAt, org.Name } });
             }

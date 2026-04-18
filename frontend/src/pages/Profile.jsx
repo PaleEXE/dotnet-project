@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react';
 import { API } from '../App';
+import { useI18n } from '../i18n/I18nContext';
+import ProfileAvatar from '../components/ProfileAvatar';
 
 export default function Profile({ user, setUser }) {
+  const { t } = useI18n();
   const [profile, setProfile] = useState(null);
   const [workLogs, setWorkLogs] = useState([]);
   const [uploading, setUploading] = useState(false);
@@ -51,35 +54,40 @@ export default function Profile({ user, setUser }) {
     setUploading(false);
   };
 
-  if (!profile) return <div className="py-20 text-center text-slate-500 font-medium">Loading profile...</div>;
+  if (!profile) return <div className="py-20 text-center text-slate-500 font-medium">{t('profile.loading')}</div>;
 
   const totalHours = workLogs.reduce((sum, h) => sum + h.hoursWorked, 0);
 
   return (
-    <div className="max-w-4xl mx-auto space-y-10">
+    <div className="max-w-4xl mx-auto space-y-10 animate-fade-in">
       
       {/* Profile Overview Card */}
       <div>
-        <h1 className="text-3xl font-bold text-slate-900 tracking-tight mb-6">My Profile</h1>
+        <h1 className="text-3xl font-bold text-slate-900 tracking-tight mb-6">{t('profile.title')}</h1>
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-8 flex flex-col md:flex-row gap-8 items-center md:items-start">
           
           <div className="flex flex-col items-center gap-2 shrink-0">
-            <div className="w-24 h-24 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center border-2 border-emerald-200 overflow-hidden relative group">
+            <div className="relative group">
               {uploading ? (
-                 <span className="text-sm font-semibold animate-pulse">Wait...</span>
-              ) : profile.profilePictureUrl ? (
-                <img src={profile.profilePictureUrl} alt="Avatar" className="w-full h-full object-cover" />
+                <div className="w-24 h-24 rounded-full bg-emerald-100 border-2 border-emerald-200 flex items-center justify-center">
+                  <span className="text-sm font-semibold text-emerald-700 animate-pulse">{t('profile.uploading')}</span>
+                </div>
               ) : (
-                <span className="text-3xl font-bold tracking-tight uppercase">
-                  {profile.fullName.charAt(0)}
-                </span>
+                <ProfileAvatar
+                  src={profile.profilePictureUrl}
+                  name={profile.fullName}
+                  size="xl"
+                  clickable={!!profile.profilePictureUrl}
+                />
               )}
               
-              <label title="Upload new picture" className="absolute inset-0 bg-black/60 text-white flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity duration-200">
-                <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                <span className="text-[10px] font-semibold uppercase tracking-wider">Change</span>
-                <input type="file" className="hidden" accept="image/*" onChange={handleAvatarUpload} disabled={uploading} />
-              </label>
+              {!uploading && (
+                <label title={t('profile.changePicture')} className="absolute inset-0 bg-black/60 text-white flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity duration-200 rounded-full">
+                  <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                  <span className="text-[10px] font-semibold uppercase tracking-wider">{t('profile.changePicture')}</span>
+                  <input type="file" className="hidden" accept="image/*" onChange={handleAvatarUpload} disabled={uploading} />
+                </label>
+              )}
             </div>
           </div>
           
@@ -90,27 +98,27 @@ export default function Profile({ user, setUser }) {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-8 mt-6">
               {profile.phoneNumber && (
                 <div>
-                  <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Phone</p>
+                  <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">{t('profile.phone')}</p>
                   <p className="font-medium text-slate-800">{profile.phoneNumber}</p>
                 </div>
               )}
               {profile.universityId && (
                 <div>
-                  <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">University ID</p>
+                  <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">{t('profile.universityId')}</p>
                   <p className="font-medium text-slate-800">{profile.universityId}</p>
                 </div>
               )}
               <div>
-                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Course Status</p>
+                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">{t('profile.courseStatus')}</p>
                 <span className={`inline-flex px-2 py-0.5 rounded text-xs font-bold ${profile.takingVolunteeringCourse ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'}`}>
-                  {profile.takingVolunteeringCourse ? 'Taking Volunteering' : 'Standard Student'}
+                  {profile.takingVolunteeringCourse ? t('profile.takingCourse') : t('profile.standardStudent')}
                 </span>
               </div>
             </div>
           </div>
           
           <div className="bg-emerald-50 rounded-lg border border-emerald-100 p-6 text-center shrink-0 min-w-[150px]">
-            <p className="text-sm font-semibold text-emerald-800 uppercase tracking-wider mb-1">Total Hours</p>
+            <p className="text-sm font-semibold text-emerald-800 uppercase tracking-wider mb-1">{t('profile.totalHours')}</p>
             <p className="text-4xl font-black text-emerald-600">
               {totalHours}
             </p>
@@ -120,11 +128,11 @@ export default function Profile({ user, setUser }) {
 
       {/* Logged Hours Table */}
       <div>
-        <h2 className="text-2xl font-bold text-slate-900 tracking-tight mb-4">Logged Hours</h2>
+        <h2 className="text-2xl font-bold text-slate-900 tracking-tight mb-4">{t('profile.loggedHours')}</h2>
         
         {workLogs.length === 0 ? (
           <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-10 text-center">
-             <p className="text-slate-500 text-lg">You haven't logged any volunteering hours yet.</p>
+             <p className="text-slate-500 text-lg">{t('profile.noHours')}</p>
           </div>
         ) : (
           <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
@@ -132,10 +140,10 @@ export default function Profile({ user, setUser }) {
               <table className="min-w-full divide-y divide-slate-200 text-left">
                 <thead className="bg-slate-50">
                   <tr>
-                    <th scope="col" className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Task</th>
-                    <th scope="col" className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Date Recorded</th>
-                    <th scope="col" className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Hours</th>
-                    <th scope="col" className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Notes</th>
+                    <th scope="col" className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">{t('profile.task')}</th>
+                    <th scope="col" className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">{t('profile.dateRecorded')}</th>
+                    <th scope="col" className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">{t('profile.hours')}</th>
+                    <th scope="col" className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">{t('profile.notes')}</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-slate-200">
@@ -150,10 +158,10 @@ export default function Profile({ user, setUser }) {
                         {w.recordedAt?.split('T')[0]}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-emerald-600 text-right">
-                        {w.hoursWorked} <span className="text-slate-400 font-normal ml-1">hrs</span>
+                        {w.hoursWorked} <span className="text-slate-400 font-normal ml-1">{t('admin.hrs')}</span>
                       </td>
                       <td className="px-6 py-4 text-sm text-slate-600 max-w-[300px] truncate">
-                        {w.notes || <span className="text-slate-400 italic">No notes provided</span>}
+                        {w.notes || <span className="text-slate-400 italic">{t('profile.noNotes')}</span>}
                       </td>
                     </tr>
                   ))}

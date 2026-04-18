@@ -42,6 +42,10 @@ public static class TasksApi
             if (string.IsNullOrWhiteSpace(req.Title)) return Results.BadRequest(new { message = "Title is required" });
             if (req.OrganizationId <= 0) return Results.BadRequest(new { message = "OrganizationId is required" });
 
+            // Date validation: start must precede end
+            if (req.StartDate.HasValue && req.EndDate.HasValue && req.StartDate.Value >= req.EndDate.Value)
+                return Results.BadRequest(new { message = "Start date must be before end date" });
+
             var task = new TaskModel
             {
                 OrganizationId = req.OrganizationId,
@@ -75,6 +79,10 @@ public static class TasksApi
         {
             var task = await db.Tasks.FindAsync(id);
             if (task is null) return Results.NotFound(new { message = "Task not found" });
+
+            // Date validation: start must precede end
+            if (input.StartDate.HasValue && input.EndDate.HasValue && input.StartDate.Value >= input.EndDate.Value)
+                return Results.BadRequest(new { message = "Start date must be before end date" });
 
             task.Title = input.Title;
             task.Description = input.Description;

@@ -10,6 +10,7 @@ public class Organization
     public string? LogoUrl { get; set; }
     public string? Description { get; set; }
     public DateTime CreatedAt { get; set; }
+    public bool IsApproved { get; set; }
 
     // Navigation
     public ICollection<Task> Tasks { get; set; } = new List<Task>();
