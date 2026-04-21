@@ -1,7 +1,16 @@
 /* ── Google Fonts ─────────────────────────────────────────────── */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Kufi+Arabic:wght@400;500;600;700;800;900&display=swap');
-
 @import "tailwindcss";
+
+@theme {
+  --color-sage: #7c8464;
+  --color-sage-hover: #6a7153;
+  --color-sand: #e5d2b7;
+  --color-earth: #8c7859;
+  --color-sand-hover: #a38d6b;
+  --color-offwhite: #f9f9f9;
+  --color-ink: #333333;
+}
 
 /* ── Base styles ──────────────────────────────────────────────── */
 html {
@@ -9,8 +18,8 @@ html {
 }
 
 body {
-  background-color: #f8fafc; /* bg-slate-50 */
-  color: #0f172a; /* text-slate-900 */
+  background-color: #f9f9f9; /* off-white */
+  color: #333333; /* grayish-black */
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -23,8 +32,13 @@ body {
 
 /* ── Focus styles for accessibility ──────────────────────────── */
 *:focus-visible {
-  outline: 2px solid #10b981;
+  outline: 2px solid var(--color-sage);
   outline-offset: 2px;
+}
+
+/* ── Global Pointers ──────────────────────────── */
+button, a, input[type="file"], select, [role="button"], .cursor-pointer {
+  cursor: pointer;
 }
 
 /* ── Smooth scrollbar hide for galleries ─────────────────────── */

@@ -31,10 +31,10 @@ export default function Login({ onLogin }) {
   };
 
   return (
-    <div className="w-full max-w-md bg-white rounded-xl shadow-lg border border-slate-100 p-8 animate-scale-in">
+    <div className="w-full max-w-md bg-white rounded-2xl shadow-lg border border-slate-100 p-8 animate-scale-in">
       <div className="text-center mb-8">
-        <h1 className="text-2xl font-bold text-slate-800 mb-2">{t('login.title')}</h1>
-        <p className="text-slate-500 text-sm">{t('login.subtitle')}</p>
+        <h1 className="text-2xl font-bold text-ink mb-2">{t('login.title')}</h1>
+        <p className="text-earth text-sm">{t('login.subtitle')}</p>
       </div>
 
       {error && (
@@ -45,47 +45,47 @@ export default function Login({ onLogin }) {
 
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
-          <label className="block text-sm font-semibold text-slate-700 mb-1.5">{t('login.email')}</label>
+          <label className="block text-sm font-semibold text-ink mb-1.5">{t('login.email')}</label>
           <input 
             type="email" 
             value={email} 
             onChange={e => setEmail(e.target.value)} 
             required 
-            className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all text-slate-700"
+            className="w-full px-4 py-2.5 rounded-2xl border border-sand focus:ring-2 focus:ring-sage-500 focus:border-sage-500 outline-none transition-all text-ink"
             placeholder={t('login.emailPlaceholder')}
           />
         </div>
         
         <div>
-          <label className="block text-sm font-semibold text-slate-700 mb-1.5">{t('login.password')}</label>
+          <label className="block text-sm font-semibold text-ink mb-1.5">{t('login.password')}</label>
           <input 
             type="password" 
             value={password} 
             onChange={e => setPassword(e.target.value)} 
             required 
-            className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all text-slate-700"
+            className="w-full px-4 py-2.5 rounded-2xl border border-sand focus:ring-2 focus:ring-sage-500 focus:border-sage-500 outline-none transition-all text-ink"
             placeholder={t('login.passwordPlaceholder')}
           />
         </div>
 
         <button 
           type="submit" 
-          className="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
+          className="w-full py-3 px-4 bg-sage hover:bg-sage-hover text-white font-semibold rounded-2xl shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sage-500"
         >
           {t('login.submit')}
         </button>
       </form>
       
       <div className="mt-4 text-right">
-        <Link to="/forgot-password" className="text-sm font-semibold text-emerald-600 hover:text-emerald-700 transition-colors">
+        <Link to="/forgot-password" className="text-sm font-semibold text-sage-600 hover:text-sage-700 transition-colors">
           {t('login.forgotPassword')}
         </Link>
       </div>
       
       <div className="mt-8 text-center border-t border-slate-100 pt-6">
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-earth">
           {t('login.noAccount')}{' '}
-          <Link to="/register" className="font-semibold text-emerald-600 hover:text-emerald-700 transition-colors">
+          <Link to="/register" className="font-semibold text-sage-600 hover:text-sage-700 transition-colors">
             {t('login.registerLink')}
           </Link>
         </p>

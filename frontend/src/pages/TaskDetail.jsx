@@ -88,12 +88,12 @@ export default function TaskDetail({ user }) {
 
   const getVolunteerHours = (userId) => hoursLog.filter(h => h.userId === userId);
 
-  if (!task) return <div className="py-20 text-center text-slate-500 font-medium">{t('taskDetail.loading')}</div>;
+  if (!task) return <div className="py-20 text-center text-earth font-medium">{t('taskDetail.loading')}</div>;
 
   return (
     <div className="space-y-8 animate-fade-in">
       
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+      <div className="bg-white rounded-2xl shadow-sm border border-sand overflow-hidden">
         {/* Cover Images */}
         {task.taskImages && task.taskImages.length > 0 && (
           <TaskImageGallery images={task.taskImages} mode="detail" />
@@ -101,9 +101,9 @@ export default function TaskDetail({ user }) {
 
         <div className="p-8">
           <div className="flex items-baseline justify-between mb-4">
-            <h1 className="text-3xl font-bold text-slate-900 tracking-tight">{task.title}</h1>
+            <h1 className="text-3xl font-bold text-ink tracking-tight">{task.title}</h1>
             <span className={`px-3 py-1 text-sm font-bold uppercase tracking-wider rounded-full ${
-              task.status === 'open' ? 'bg-emerald-100 text-emerald-800' : 
+              task.status === 'open' ? 'bg-sage-100 text-sage-800' : 
               task.status === 'closed' ? 'bg-red-100 text-red-800' : 
               'bg-blue-100 text-blue-800'
             }`}>
@@ -114,42 +114,42 @@ export default function TaskDetail({ user }) {
           {task.taskTags && task.taskTags.length > 0 && (
             <div className="flex flex-wrap gap-2 mb-6">
               {task.taskTags.map(tt => (
-                <span key={tt.tagId} className="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide">
+                <span key={tt.tagId} className="bg-slate-100 text-earth px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide">
                   {tt.tag.name}
                 </span>
               ))}
             </div>
           )}
 
-          <div className="prose prose-slate max-w-none text-slate-700 leading-relaxed mb-8">
+          <div className="prose prose-slate max-w-none text-ink leading-relaxed mb-8">
             <p>{task.description}</p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-8 bg-slate-50 p-6 rounded-lg border border-slate-100">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-8 bg-offwhite p-6 rounded-2xl border border-slate-100">
             {task.organization && (
               <div>
-                <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-1">{t('taskDetail.organization')}</p>
-                <Link to={`/organizations/${task.organizationId}`} className="font-medium text-emerald-700 hover:text-emerald-800 transition-colors">
+                <p className="text-sm font-semibold text-earth uppercase tracking-wider mb-1">{t('taskDetail.organization')}</p>
+                <Link to={`/organizations/${task.organizationId}`} className="font-medium text-sage-700 hover:text-sage-800 transition-colors">
                   {task.organization.name}
                 </Link>
               </div>
             )}
             {task.maxVolunteers && (
               <div>
-                <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-1">{t('taskDetail.volunteersNeeded')}</p>
-                <p className="font-medium text-slate-900">{task.maxVolunteers}</p>
+                <p className="text-sm font-semibold text-earth uppercase tracking-wider mb-1">{t('taskDetail.volunteersNeeded')}</p>
+                <p className="font-medium text-ink">{task.maxVolunteers}</p>
               </div>
             )}
             {task.startDate && (
               <div>
-                <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-1">{t('taskDetail.startDate')}</p>
-                <p className="font-medium text-slate-900">{new Date(task.startDate).toLocaleDateString()}</p>
+                <p className="text-sm font-semibold text-earth uppercase tracking-wider mb-1">{t('taskDetail.startDate')}</p>
+                <p className="font-medium text-ink">{new Date(task.startDate).toLocaleDateString()}</p>
               </div>
             )}
             {task.endDate && (
               <div>
-                <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-1">{t('taskDetail.endDate')}</p>
-                <p className="font-medium text-slate-900">{new Date(task.endDate).toLocaleDateString()}</p>
+                <p className="text-sm font-semibold text-earth uppercase tracking-wider mb-1">{t('taskDetail.endDate')}</p>
+                <p className="font-medium text-ink">{new Date(task.endDate).toLocaleDateString()}</p>
               </div>
             )}
           </div>
@@ -157,15 +157,15 @@ export default function TaskDetail({ user }) {
       </div>
 
       {message && (
-         <div className="bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded-r-md animate-slide-up">
-           <p className="text-sm text-emerald-700 font-medium">{message}</p>
+         <div className="bg-sage-50 border-l-4 border-sage-500 p-4 rounded-r-md animate-slide-up">
+           <p className="text-sm text-sage-700 font-medium">{message}</p>
          </div>
       )}
 
       {/* Action Button for Students */}
       {user.role === 'student' && !alreadyApplied && task.status === 'open' && (
         <button 
-          className="w-full sm:w-auto px-8 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg shadow-sm transition-colors text-lg"
+          className="w-full sm:w-auto px-8 py-3 bg-sage hover:bg-sage-hover text-white font-semibold rounded-2xl shadow-sm transition-colors text-lg"
           onClick={handleApply}
         >
           {t('taskDetail.volunteerBtn')}
@@ -173,8 +173,8 @@ export default function TaskDetail({ user }) {
       )}
       
       {user.role === 'student' && alreadyApplied && (
-        <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 p-4 rounded-lg flex items-center">
-          <svg className="w-6 h-6 mr-3 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <div className="bg-sage-50 border border-sage-200 text-sage-800 p-4 rounded-2xl flex items-center">
+          <svg className="w-6 h-6 mr-3 text-sage-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
           <span className="font-medium">{t('taskDetail.alreadyApplied')}</span>
         </div>
       )}
@@ -182,10 +182,10 @@ export default function TaskDetail({ user }) {
       {/* Volunteers List for Organizations */}
       {user.role === 'organization' && (
         <div className="pt-6">
-          <h2 className="text-2xl font-bold text-slate-900 mb-6 border-b border-slate-200 pb-2">{t('taskDetail.volunteersTitle')} ({volunteers.length})</h2>
+          <h2 className="text-2xl font-bold text-ink mb-6 border-b border-sand pb-2">{t('taskDetail.volunteersTitle')} ({volunteers.length})</h2>
           
           {volunteers.length === 0 ? (
-            <p className="text-slate-500 italic">{t('taskDetail.noVolunteers')}</p>
+            <p className="text-earth italic">{t('taskDetail.noVolunteers')}</p>
           ) : (
             <div className="space-y-4 stagger-children">
               {volunteers.map(v => {
@@ -193,7 +193,7 @@ export default function TaskDetail({ user }) {
                 const totalHours = vHours.reduce((s, h) => s + h.hoursWorked, 0);
 
                 return (
-                  <div key={v.id} className="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden animate-slide-up">
+                  <div key={v.id} className="bg-white rounded-2xl shadow-sm border border-sand overflow-hidden animate-slide-up">
                     <div className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                       <div className="flex items-center gap-3">
                         <ProfileAvatar
@@ -202,10 +202,10 @@ export default function TaskDetail({ user }) {
                           size="md"
                         />
                         <div>
-                          <p className="font-bold text-slate-800 text-lg">{v.user?.fullName || `User #${v.userId}`}</p>
-                          <p className="text-sm text-slate-500 mt-1">{t('taskDetail.applied')}: {new Date(v.joinedAt).toLocaleDateString()}</p>
+                          <p className="font-bold text-ink text-lg">{v.user?.fullName || `User #${v.userId}`}</p>
+                          <p className="text-sm text-earth mt-1">{t('taskDetail.applied')}: {new Date(v.joinedAt).toLocaleDateString()}</p>
                           {totalHours > 0 && (
-                            <p className="text-sm text-emerald-600 font-semibold mt-1 flex items-center gap-1">
+                            <p className="text-sm text-sage-600 font-semibold mt-1 flex items-center gap-1">
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                               {totalHours.toFixed(1)} {t('taskDetail.hoursLogged')}
                             </p>
@@ -215,7 +215,7 @@ export default function TaskDetail({ user }) {
                       
                       <div className="flex items-center gap-4">
                         <span className={`px-2.5 py-1 text-xs font-bold uppercase tracking-wider rounded-full ${
-                          v.status === 'approved' ? 'bg-emerald-100 text-emerald-800' :
+                          v.status === 'approved' ? 'bg-sage-100 text-sage-800' :
                           v.status === 'rejected' ? 'bg-red-100 text-red-800' :
                           'bg-orange-100 text-orange-800'
                         }`}>
@@ -226,7 +226,7 @@ export default function TaskDetail({ user }) {
                           <div className="flex gap-2">
                             <button 
                               onClick={() => handleStatus(v.id, 'approved')}
-                              className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded transition-colors"
+                              className="px-3 py-1.5 bg-sage hover:bg-sage-hover text-white text-sm font-semibold rounded transition-colors"
                             >
                               {t('taskDetail.approve')}
                             </button>
@@ -242,7 +242,7 @@ export default function TaskDetail({ user }) {
                         {v.status === 'approved' && logFormUserId !== v.userId && (
                           <button
                             onClick={() => { setLogFormUserId(v.userId); setLogHours(''); setLogNotes(''); }}
-                            className="px-3 py-1.5 bg-slate-100 hover:bg-emerald-50 text-emerald-700 border border-slate-200 hover:border-emerald-200 text-sm font-semibold rounded transition-colors flex items-center gap-1.5"
+                            className="px-3 py-1.5 bg-slate-100 hover:bg-sage-50 text-sage-700 border border-sand hover:border-sage-200 text-sm font-semibold rounded transition-colors flex items-center gap-1.5"
                           >
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                             {t('taskDetail.logHours')}
@@ -253,13 +253,13 @@ export default function TaskDetail({ user }) {
 
                     {/* Log Hours Form (inline, for this volunteer) */}
                     {logFormUserId === v.userId && (
-                      <div className="border-t border-slate-200 bg-slate-50 p-5 animate-slide-down">
-                        <h4 className="text-sm font-bold text-slate-800 mb-4 uppercase tracking-wider">
+                      <div className="border-t border-sand bg-offwhite p-5 animate-slide-down">
+                        <h4 className="text-sm font-bold text-ink mb-4 uppercase tracking-wider">
                           {t('taskDetail.logHoursFor')} {v.user?.fullName || `User #${v.userId}`}
                         </h4>
                         <div className="flex flex-col sm:flex-row gap-4">
                           <div className="flex-1">
-                            <label className="block text-xs font-semibold text-slate-700 mb-1">{t('taskDetail.hoursWorked')}</label>
+                            <label className="block text-xs font-semibold text-ink mb-1">{t('taskDetail.hoursWorked')}</label>
                             <input
                               type="number"
                               step="0.5"
@@ -267,30 +267,30 @@ export default function TaskDetail({ user }) {
                               value={logHours}
                               onChange={e => setLogHours(e.target.value)}
                               placeholder="e.g. 2.5"
-                              className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-emerald-500 focus:border-emerald-500 text-sm"
+                              className="w-full px-3 py-2 rounded-2xl border border-sand focus:ring-sage-500 focus:border-sage-500 text-sm"
                             />
                           </div>
                           <div className="flex-[2]">
-                            <label className="block text-xs font-semibold text-slate-700 mb-1">{t('taskDetail.noteOptional')}</label>
+                            <label className="block text-xs font-semibold text-ink mb-1">{t('taskDetail.noteOptional')}</label>
                             <input
                               type="text"
                               value={logNotes}
                               onChange={e => setLogNotes(e.target.value)}
                               placeholder={t('taskDetail.notePlaceholder')}
-                              className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-emerald-500 focus:border-emerald-500 text-sm"
+                              className="w-full px-3 py-2 rounded-2xl border border-sand focus:ring-sage-500 focus:border-sage-500 text-sm"
                             />
                           </div>
                         </div>
                         <div className="flex gap-3 pt-4">
                           <button
                             onClick={() => handleLogHours(v.userId)}
-                            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-md transition-colors"
+                            className="px-4 py-2 bg-sage hover:bg-sage-hover text-white text-sm font-semibold rounded-2xl transition-colors"
                           >
                             {t('taskDetail.submitHours')}
                           </button>
                           <button
                             onClick={() => setLogFormUserId(null)}
-                            className="px-4 py-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-sm font-semibold rounded-md transition-colors"
+                            className="px-4 py-2 bg-white border border-sand hover:bg-offwhite text-ink text-sm font-semibold rounded-2xl transition-colors"
                           >
                             {t('taskDetail.cancel')}
                           </button>
@@ -300,13 +300,13 @@ export default function TaskDetail({ user }) {
 
                     {/* Show logged hours for this volunteer */}
                     {vHours.length > 0 && (
-                      <div className="border-t border-slate-100 bg-slate-50/50 px-5 py-3">
+                      <div className="border-t border-slate-100 bg-offwhite/50 px-5 py-3">
                         <div className="space-y-1.5">
                           {vHours.map(h => (
                             <div key={h.id} className="flex items-center justify-between text-sm">
                               <div className="flex items-center gap-2">
-                                <span className="font-semibold text-emerald-700">{h.hoursWorked}h</span>
-                                {h.notes && <span className="text-slate-500">— {h.notes}</span>}
+                                <span className="font-semibold text-sage-700">{h.hoursWorked}h</span>
+                                {h.notes && <span className="text-earth">— {h.notes}</span>}
                               </div>
                               <span className="text-xs text-slate-400">{new Date(h.recordedAt).toLocaleDateString()}</span>
                             </div>

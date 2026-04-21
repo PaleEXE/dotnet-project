@@ -11,7 +11,7 @@ import ImageModal from './ImageModal';
  *   size        – 'sm' | 'md' | 'lg' | 'xl'  (default 'md')
  *   clickable   – if true, clicking opens full-size modal (default true)
  *   className   – extra CSS classes
- *   borderColor – Tailwind border class (default 'border-emerald-200')
+ *   borderColor – Tailwind border class (default 'border-sage-200')
  */
 export default function ProfileAvatar({
   src,
@@ -19,7 +19,7 @@ export default function ProfileAvatar({
   size = 'md',
   clickable = true,
   className = '',
-  borderColor = 'border-emerald-200',
+  borderColor = 'border-sage-200',
 }) {
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
@@ -47,9 +47,9 @@ export default function ProfileAvatar({
         className={`
           relative rounded-full overflow-hidden border-2 ${borderColor}
           flex items-center justify-center shrink-0
-          bg-emerald-100 text-emerald-700 font-bold
+          bg-sage-100 text-sage-700 font-bold
           ${sizeClass}
-          ${clickable && hasImage ? 'cursor-pointer hover:ring-2 hover:ring-emerald-400 hover:ring-offset-1 transition-all' : ''}
+          ${clickable && hasImage ? 'cursor-pointer hover:ring-2 hover:ring-sage-400 hover:ring-offset-1 transition-all' : ''}
           ${className}
         `}
         title={name}

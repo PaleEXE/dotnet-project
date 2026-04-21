@@ -130,11 +130,11 @@ export default function AdminPanel({ user }) {
   // ── Status Badge ───────────────────────────────────────
   const Badge = ({ text, color = 'slate' }) => {
     const colors = {
-      emerald: 'bg-emerald-100 text-emerald-800',
+      sage: 'bg-sage-100 text-sage-800',
       red: 'bg-red-100 text-red-800',
       orange: 'bg-orange-100 text-orange-800',
       blue: 'bg-blue-100 text-blue-800',
-      slate: 'bg-slate-100 text-slate-700',
+      slate: 'bg-slate-100 text-ink',
       purple: 'bg-purple-100 text-purple-800',
     };
     return <span className={`px-2 py-0.5 text-xs font-bold uppercase tracking-wider rounded-full ${colors[color] || colors.slate}`}>{text}</span>;
@@ -142,26 +142,26 @@ export default function AdminPanel({ user }) {
 
   // ── Stat Card ──────────────────────────────────────────
   const StatCard = ({ label, value, icon }) => (
-    <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 flex items-center gap-5 card-hover animate-fade-in">
-      <div className="w-12 h-12 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center text-xl shrink-0">
+    <div className="bg-white rounded-2xl border border-sand shadow-sm p-6 flex items-center gap-5 card-hover animate-fade-in">
+      <div className="w-12 h-12 rounded-2xl bg-sage-100 text-sage-700 flex items-center justify-center text-xl shrink-0">
         {icon}
       </div>
       <div>
-        <p className="text-sm text-slate-500 font-semibold uppercase tracking-wider">{label}</p>
-        <p className="text-3xl font-black text-slate-900">{value ?? '—'}</p>
+        <p className="text-sm text-earth font-semibold uppercase tracking-wider">{label}</p>
+        <p className="text-3xl font-black text-ink">{value ?? '—'}</p>
       </div>
     </div>
   );
 
   // ── Table Shell ────────────────────────────────────────
   const Table = ({ headers, children }) => (
-    <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+    <div className="bg-white rounded-2xl border border-sand shadow-sm overflow-hidden">
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-slate-200 text-left text-sm">
-          <thead className="bg-slate-50">
+          <thead className="bg-offwhite">
             <tr>
               {headers.map(h => (
-                <th key={h} className="px-5 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap">{h}</th>
+                <th key={h} className="px-5 py-3.5 text-xs font-bold text-earth uppercase tracking-wider whitespace-nowrap">{h}</th>
               ))}
             </tr>
           </thead>
@@ -175,11 +175,11 @@ export default function AdminPanel({ user }) {
 
   const ActionBtn = ({ onClick, color = 'slate', children }) => {
     const colors = {
-      emerald: 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border-emerald-200',
+      sage: 'bg-sage-50 text-sage-700 hover:bg-sage-100 border-sage-200',
       red: 'bg-red-50 text-red-700 hover:bg-red-100 border-red-200',
       orange: 'bg-orange-50 text-orange-700 hover:bg-orange-100 border-orange-200',
       blue: 'bg-blue-50 text-blue-700 hover:bg-blue-100 border-blue-200',
-      slate: 'bg-slate-50 text-slate-700 hover:bg-slate-100 border-slate-200',
+      slate: 'bg-offwhite text-ink hover:bg-slate-100 border-sand',
       purple: 'bg-purple-50 text-purple-700 hover:bg-purple-100 border-purple-200',
     };
     return (
@@ -195,25 +195,25 @@ export default function AdminPanel({ user }) {
     <div className="animate-fade-in">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-900 tracking-tight">{t('admin.title')}</h1>
-        <p className="text-slate-500 mt-1">{t('admin.subtitle')}</p>
+        <h1 className="text-3xl font-bold text-ink tracking-tight">{t('admin.title')}</h1>
+        <p className="text-earth mt-1">{t('admin.subtitle')}</p>
       </div>
 
       {/* Toast */}
       {msg && (
-        <div className="fixed top-20 right-6 bg-emerald-600 text-white px-5 py-3 rounded-lg shadow-lg text-sm font-semibold z-50 toast">
+        <div className="fixed top-20 right-6 bg-sage text-white px-5 py-3 rounded-2xl shadow-lg text-sm font-semibold z-50 toast">
           {msg}
         </div>
       )}
 
       {/* Tab Bar */}
-      <div className="flex gap-1 mb-8 bg-slate-100 p-1 rounded-xl overflow-x-auto">
+      <div className="flex gap-1 mb-8 bg-slate-100 p-1 rounded-2xl overflow-x-auto">
         {TABS.map((label, i) => (
           <button
             key={TAB_KEYS[i]}
             onClick={() => setTabIdx(i)}
-            className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all whitespace-nowrap ${
-              tabIdx === i ? 'bg-white text-emerald-700 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+            className={`px-4 py-2 rounded-2xl text-sm font-semibold transition-all whitespace-nowrap ${
+              tabIdx === i ? 'bg-white text-sage-700 shadow-sm' : 'text-earth hover:text-ink'
             }`}
           >
             {label}
@@ -237,24 +237,24 @@ export default function AdminPanel({ user }) {
       {tab === 'Users' && (
         <Table headers={[t('admin.id'), t('admin.name'), t('admin.email'), t('admin.role'), t('admin.univId'), t('admin.statusLabel'), t('admin.created'), t('admin.actions')]}>
           {users.map(u => (
-            <tr key={u.id} className={`hover:bg-slate-50 transition-colors ${u.isBlocked ? 'bg-red-50/50' : ''}`}>
+            <tr key={u.id} className={`hover:bg-offwhite transition-colors ${u.isBlocked ? 'bg-red-50/50' : ''}`}>
               <Td className="font-mono text-slate-400">{u.id}</Td>
-              <Td className="font-semibold text-slate-800">{u.fullName}</Td>
-              <Td className="text-slate-600">{u.email}</Td>
+              <Td className="font-semibold text-ink">{u.fullName}</Td>
+              <Td className="text-earth">{u.email}</Td>
               <Td><Badge text={u.role} color={u.role === 'admin' ? 'purple' : 'blue'} /></Td>
-              <Td className="text-slate-500">{u.universityId || '—'}</Td>
+              <Td className="text-earth">{u.universityId || '—'}</Td>
               <Td>
                 {u.isBlocked
                   ? <Badge text={t('admin.blocked')} color="red" />
-                  : <Badge text={t('admin.active')} color="emerald" />
+                  : <Badge text={t('admin.active')} color="sage" />
                 }
               </Td>
-              <Td className="text-slate-500 text-xs">{u.createdAt?.split('T')[0]}</Td>
+              <Td className="text-earth text-xs">{u.createdAt?.split('T')[0]}</Td>
               <Td>
                 <div className="flex gap-1.5 flex-wrap">
                   {u.id !== 1 && (
                     <>
-                      <ActionBtn onClick={() => toggleBlock(u.id)} color={u.isBlocked ? 'emerald' : 'orange'}>
+                      <ActionBtn onClick={() => toggleBlock(u.id)} color={u.isBlocked ? 'sage' : 'orange'}>
                         {u.isBlocked ? t('admin.unblock') : t('admin.block')}
                       </ActionBtn>
                       <ActionBtn
@@ -278,21 +278,21 @@ export default function AdminPanel({ user }) {
       {tab === 'Organizations' && (
         <Table headers={[t('admin.id'), t('admin.name'), t('admin.email'), t('admin.phone'), t('admin.statusLabel'), t('admin.created'), t('admin.actions')]}>
           {orgs.map(o => (
-            <tr key={o.id} className="hover:bg-slate-50 transition-colors">
+            <tr key={o.id} className="hover:bg-offwhite transition-colors">
               <Td className="font-mono text-slate-400">{o.id}</Td>
-              <Td className="font-semibold text-slate-800">{o.name}</Td>
-              <Td className="text-slate-600">{o.email}</Td>
-              <Td className="text-slate-500">{o.phoneNumber || '—'}</Td>
+              <Td className="font-semibold text-ink">{o.name}</Td>
+              <Td className="text-earth">{o.email}</Td>
+              <Td className="text-earth">{o.phoneNumber || '—'}</Td>
               <Td>
                 {o.isApproved
-                  ? <Badge text={t('admin.approved')} color="emerald" />
+                  ? <Badge text={t('admin.approved')} color="sage" />
                   : <Badge text={t('admin.pending')} color="orange" />
                 }
               </Td>
-              <Td className="text-slate-500 text-xs">{o.createdAt?.split('T')[0]}</Td>
+              <Td className="text-earth text-xs">{o.createdAt?.split('T')[0]}</Td>
               <Td>
                 <div className="flex gap-1.5 flex-wrap">
-                  <ActionBtn onClick={() => toggleOrgApproval(o.id)} color={o.isApproved ? 'orange' : 'emerald'}>
+                  <ActionBtn onClick={() => toggleOrgApproval(o.id)} color={o.isApproved ? 'orange' : 'sage'}>
                     {o.isApproved ? t('admin.revoke') : t('admin.approve')}
                   </ActionBtn>
                   <ActionBtn onClick={() => deleteOrg(o.id)} color="red">{t('admin.delete')}</ActionBtn>
@@ -310,24 +310,24 @@ export default function AdminPanel({ user }) {
       {tab === 'Tasks' && (
         <Table headers={[t('admin.id'), t('admin.titleCol'), t('admin.organization'), t('admin.statusLabel'), t('admin.maxVol'), t('admin.dates'), t('admin.actions')]}>
           {tasks.map(task => (
-            <tr key={task.id} className="hover:bg-slate-50 transition-colors">
+            <tr key={task.id} className="hover:bg-offwhite transition-colors">
               <Td className="font-mono text-slate-400">{task.id}</Td>
-              <Td className="font-semibold text-slate-800 max-w-[200px] truncate">{task.title}</Td>
-              <Td className="text-slate-600">{task.organization?.name || '—'}</Td>
+              <Td className="font-semibold text-ink max-w-[200px] truncate">{task.title}</Td>
+              <Td className="text-earth">{task.organization?.name || '—'}</Td>
               <Td>
                 <Badge
                   text={task.status}
-                  color={task.status === 'open' ? 'emerald' : task.status === 'closed' ? 'red' : 'blue'}
+                  color={task.status === 'open' ? 'sage' : task.status === 'closed' ? 'red' : 'blue'}
                 />
               </Td>
-              <Td className="text-slate-500">{task.maxVolunteers ?? '∞'}</Td>
-              <Td className="text-slate-500 text-xs">
+              <Td className="text-earth">{task.maxVolunteers ?? '∞'}</Td>
+              <Td className="text-earth text-xs">
                 {task.startDate ? task.startDate.split('T')[0] : '—'} → {task.endDate ? task.endDate.split('T')[0] : '—'}
               </Td>
               <Td>
                 <div className="flex gap-1.5 flex-wrap">
                   <select
-                    className="px-2 py-1 text-xs rounded border border-slate-200 bg-white text-slate-700 focus:ring-emerald-500 focus:border-emerald-500"
+                    className="px-2 py-1 text-xs rounded border border-sand bg-white text-ink focus:ring-sage-500 focus:border-sage-500"
                     value={task.status}
                     onChange={e => changeTaskStatus(task.id, e.target.value)}
                   >
@@ -350,21 +350,21 @@ export default function AdminPanel({ user }) {
       {tab === 'Volunteers' && (
         <Table headers={[t('admin.id'), t('admin.user'), t('admin.task'), t('admin.statusLabel'), t('admin.joinedCol'), t('admin.actions')]}>
           {volunteers.map(v => (
-            <tr key={v.id} className="hover:bg-slate-50 transition-colors">
+            <tr key={v.id} className="hover:bg-offwhite transition-colors">
               <Td className="font-mono text-slate-400">{v.id}</Td>
-              <Td className="font-semibold text-slate-800">{v.user?.fullName || `User #${v.userId}`}</Td>
-              <Td className="text-slate-600">{v.task?.title || `Task #${v.taskId}`}</Td>
+              <Td className="font-semibold text-ink">{v.user?.fullName || `User #${v.userId}`}</Td>
+              <Td className="text-earth">{v.task?.title || `Task #${v.taskId}`}</Td>
               <Td>
                 <Badge
                   text={v.status}
-                  color={v.status === 'approved' ? 'emerald' : v.status === 'rejected' ? 'red' : 'orange'}
+                  color={v.status === 'approved' ? 'sage' : v.status === 'rejected' ? 'red' : 'orange'}
                 />
               </Td>
-              <Td className="text-slate-500 text-xs">{v.joinedAt?.split('T')[0]}</Td>
+              <Td className="text-earth text-xs">{v.joinedAt?.split('T')[0]}</Td>
               <Td>
                 <div className="flex gap-1.5 flex-wrap">
                   <select
-                    className="px-2 py-1 text-xs rounded border border-slate-200 bg-white text-slate-700 focus:ring-emerald-500 focus:border-emerald-500"
+                    className="px-2 py-1 text-xs rounded border border-sand bg-white text-ink focus:ring-sage-500 focus:border-sage-500"
                     value={v.status}
                     onChange={e => changeVolunteerStatus(v.id, e.target.value)}
                   >
@@ -394,11 +394,11 @@ export default function AdminPanel({ user }) {
               value={newTag}
               onChange={e => setNewTag(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && addTag()}
-              className="flex-1 px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none text-sm text-slate-800"
+              className="flex-1 px-4 py-2.5 rounded-2xl border border-sand focus:ring-2 focus:ring-sage-500 focus:border-sage-500 outline-none text-sm text-ink"
             />
             <button
               onClick={addTag}
-              className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg transition-colors text-sm"
+              className="px-5 py-2.5 bg-sage hover:bg-sage-hover text-white font-semibold rounded-2xl transition-colors text-sm"
             >
               {t('admin.addTag')}
             </button>
@@ -406,9 +406,9 @@ export default function AdminPanel({ user }) {
 
           <Table headers={[t('admin.id'), t('admin.name'), t('admin.actions')]}>
             {tags.map(tag => (
-              <tr key={tag.id} className="hover:bg-slate-50 transition-colors">
+              <tr key={tag.id} className="hover:bg-offwhite transition-colors">
                 <Td className="font-mono text-slate-400">{tag.id}</Td>
-                <Td className="font-semibold text-slate-800">{tag.name}</Td>
+                <Td className="font-semibold text-ink">{tag.name}</Td>
                 <Td>
                   <ActionBtn onClick={() => deleteTag(tag.id)} color="red">{t('admin.delete')}</ActionBtn>
                 </Td>

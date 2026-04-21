@@ -7,6 +7,7 @@ import TaskImageGallery from '../components/TaskImageGallery';
 export default function Home({ user }) {
   const { t } = useI18n();
   const [tasks, setTasks] = useState([]);
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     if (user.role === 'student' || user.role === 'admin') {
@@ -20,19 +21,22 @@ export default function Home({ user }) {
     }
   }, [user]);
 
+  const filteredTasks = tasks.filter(t => 
+    t.title.toLowerCase().includes(search.toLowerCase()) || 
+    (t.description || '').toLowerCase().includes(search.toLowerCase())
+  );
+
   const TaskCard = ({ t: task }) => (
-    <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden card-hover animate-fade-in">
+    <div className="bg-white rounded-[2rem] shadow-[0_4px_20px_rgba(0,0,0,0.06)] overflow-hidden transition-all duration-300 hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] hover:-translate-y-1 animate-fade-in border border-sand">
       {/* Image thumbnail */}
       {task.taskImages && task.taskImages.length > 0 && (
         <TaskImageGallery images={task.taskImages} mode="card" />
       )}
 
       <div className="p-6">
-        <div className="flex justify-between items-start mb-4">
-          <h3 className="text-xl font-bold text-slate-800">
-            <Link to={`/tasks/${task.id}`} className="hover:text-emerald-700 transition-colors">
-              {task.title}
-            </Link>
+        <div className="flex justify-between items-start mb-2">
+          <h3 className="text-xl font-bold text-ink hover:text-sage transition-colors line-clamp-1">
+            <Link to={`/tasks/${task.id}`}>{task.title}</Link>
           </h3>
           {user.role === 'organization' && (
             <span className={`px-2.5 py-1 text-xs font-bold uppercase rounded-full ${
@@ -45,7 +49,14 @@ export default function Home({ user }) {
           )}
         </div>
         
-        <p className="text-slate-600 mb-6 line-clamp-3">{task.description}</p>
+        {task.organization && (
+          <div className="flex items-center text-sm text-earth mb-3 font-medium">
+            <svg className="w-4 h-4 mr-1.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+            <span>{task.organization.name}</span>
+          </div>
+        )}
+        
+        <p className="text-ink/80 mb-5 line-clamp-2 text-sm leading-relaxed">{task.description}</p>
         
         <div className="flex flex-col space-y-2 mb-6">
           {(task.startDate || task.endDate) && (
@@ -67,9 +78,9 @@ export default function Home({ user }) {
         </div>
 
         {task.taskTags && task.taskTags.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-6">
+          <div className="flex flex-wrap gap-2 mb-5">
             {task.taskTags.map(tt => (
-              <span key={tt.tagId} className="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-xs font-semibold">
+              <span key={tt.tagId} className="bg-sand/30 text-earth px-3 py-1 rounded-full text-xs font-semibold">
                 {tt.tag.name}
               </span>
             ))}
@@ -79,9 +90,9 @@ export default function Home({ user }) {
         <div className="pt-2">
           <Link 
             to={`/tasks/${task.id}`} 
-            className="inline-flex w-full justify-center items-center bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 px-4 py-2 mt-2 rounded-lg text-sm font-semibold transition-colors"
+            className="inline-flex w-full justify-center items-center bg-sage text-white shadow-sm hover:bg-sage-hover px-4 py-3 rounded-2xl font-bold transition-all"
           >
-            {t('home.viewDetails')}
+            Join Now
           </Link>
         </div>
       </div>
@@ -89,31 +100,57 @@ export default function Home({ user }) {
   );
 
   return (
-    <div className="animate-fade-in">
-      <div className="flex flex-col sm:flex-row justify-between items-baseline mb-8">
-        <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
-          {user.role === 'organization' ? t('home.orgTitle') : t('home.studentTitle')}
+    <div className="animate-fade-in max-w-lg mx-auto md:max-w-none">
+      {/* Welcome Header */}
+      <div className="mb-6">
+        <h1 className="text-3xl font-extrabold text-ink mb-1">
+          Welcome back, {user.fullName ? user.fullName.split(' ')[0] : 'friend'}!
         </h1>
-        {user.role === 'organization' && (
-          <Link 
-            to="/tasks/new" 
-            className="mt-4 sm:mt-0 inline-flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg shadow-sm transition-colors"
-          >
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
-            {t('home.postNewTask')}
-          </Link>
-        )}
+        <p className="text-earth font-medium">Let's make a difference today.</p>
       </div>
 
-      {tasks.length === 0 ? (
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-12 text-center animate-fade-in">
-          <p className="text-slate-500 text-lg">
-            {user.role === 'organization' ? t('home.noTasksOrg') : t('home.noTasksStudent')}
+      {/* Impact Tracker */}
+      {user.role === 'student' && (
+        <div className="bg-sand rounded-[2rem] p-6 mb-8 shadow-sm flex justify-around items-center">
+          <div className="text-center">
+            <div className="text-3xl font-black text-ink mb-1">{(user.totalHours || 24)}</div>
+            <div className="text-xs font-bold text-earth uppercase tracking-wider">Hours Volunteered</div>
+          </div>
+          <div className="w-px h-12 bg-white/50"></div>
+          <div className="text-center">
+            <div className="text-3xl font-black text-ink mb-1">5</div>
+            <div className="text-xs font-bold text-earth uppercase tracking-wider">Communities Helped</div>
+          </div>
+        </div>
+      )}
+
+      {/* Search Bar */}
+      <div className="relative mb-8 shadow-sm rounded-full bg-white border border-sand focus-within:border-sage transition-all">
+        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+          <svg className="w-5 h-5 text-earth" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        </div>
+        <input 
+          type="text" 
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          placeholder="Search opportunities..." 
+          className="w-full bg-transparent py-4 pl-12 pr-4 rounded-full text-ink outline-none placeholder:text-earth/60 font-medium"
+        />
+      </div>
+
+      <div className="flex justify-between items-center mb-5">
+        <h2 className="text-xl font-bold text-ink">Top Opportunities</h2>
+      </div>
+
+      {filteredTasks.length === 0 ? (
+        <div className="bg-sand/20 rounded-3xl border border-sand border-dashed p-12 text-center">
+          <p className="text-earth font-medium text-lg">
+            No opportunities found.
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 stagger-children">
-          {tasks.map(task => <TaskCard key={task.id} t={task} />)}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 stagger-children">
+          {filteredTasks.map(task => <TaskCard key={task.id} t={task} />)}
         </div>
       )}
     </div>

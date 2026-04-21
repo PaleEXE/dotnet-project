@@ -58,14 +58,14 @@ export default function MyTasks({ user }) {
 
   return (
     <div className="max-w-4xl mx-auto animate-fade-in">
-      <div className="flex flex-col sm:flex-row justify-between items-baseline mb-8 border-b border-slate-200 pb-4">
+      <div className="flex flex-col sm:flex-row justify-between items-baseline mb-8 border-b border-sand pb-4">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">{t('myTasks.title')}</h1>
-          <p className="text-slate-500 mt-2">{t('myTasks.subtitle')}</p>
+          <h1 className="text-3xl font-bold text-ink tracking-tight">{t('myTasks.title')}</h1>
+          <p className="text-earth mt-2">{t('myTasks.subtitle')}</p>
         </div>
         <Link 
           to="/tasks/new" 
-          className="mt-4 sm:mt-0 inline-flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg shadow-sm transition-colors"
+          className="mt-4 sm:mt-0 inline-flex items-center px-4 py-2 bg-sage hover:bg-sage-hover text-white font-semibold rounded-2xl shadow-sm transition-colors"
         >
           <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
           {t('myTasks.postNew')}
@@ -73,57 +73,57 @@ export default function MyTasks({ user }) {
       </div>
 
       {message && (
-         <div className="bg-emerald-50 border-l-4 border-emerald-500 p-4 mb-6 rounded-r-md animate-slide-up">
-           <p className="text-sm text-emerald-700 font-medium">{message}</p>
+         <div className="bg-sage-50 border-l-4 border-sage-500 p-4 mb-6 rounded-r-md animate-slide-up">
+           <p className="text-sm text-sage-700 font-medium">{message}</p>
          </div>
       )}
 
       {tasks.length === 0 ? (
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-12 text-center">
-          <p className="text-slate-500 text-lg">{t('myTasks.noTasks')}</p>
+        <div className="bg-white rounded-2xl shadow-sm border border-sand p-12 text-center">
+          <p className="text-earth text-lg">{t('myTasks.noTasks')}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 stagger-children">
           {tasks.map(task => (
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden card-hover animate-fade-in" key={task.id}>
+            <div className="bg-white rounded-2xl shadow-sm border border-sand overflow-hidden card-hover animate-fade-in" key={task.id}>
               {editId === task.id ? (
-                <div className="p-6 bg-slate-50 animate-scale-in">
-                  <h4 className="font-bold text-slate-800 mb-4 border-b border-slate-200 pb-2">{t('myTasks.editTask')}</h4>
+                <div className="p-6 bg-offwhite animate-scale-in">
+                  <h4 className="font-bold text-ink mb-4 border-b border-sand pb-2">{t('myTasks.editTask')}</h4>
                   <div className="space-y-3">
                     <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1">{t('postTask.taskTitle')}</label>
+                      <label className="block text-xs font-semibold text-ink mb-1">{t('postTask.taskTitle')}</label>
                       <input 
                         value={editTitle} 
                         onChange={e => setEditTitle(e.target.value)} 
-                        className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-emerald-500 focus:border-emerald-500 text-sm bg-white"
+                        className="w-full px-3 py-2 rounded-2xl border border-sand focus:ring-sage-500 focus:border-sage-500 text-sm bg-white"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1">{t('postTask.description')}</label>
+                      <label className="block text-xs font-semibold text-ink mb-1">{t('postTask.description')}</label>
                       <textarea 
                         value={editDescription} 
                         onChange={e => setEditDescription(e.target.value)} 
                         rows="3"
-                        className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-emerald-500 focus:border-emerald-500 text-sm bg-white"
+                        className="w-full px-3 py-2 rounded-2xl border border-sand focus:ring-sage-500 focus:border-sage-500 text-sm bg-white"
                       />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-xs font-semibold text-slate-700 mb-1">{t('postTask.volunteersNeeded')}</label>
+                        <label className="block text-xs font-semibold text-ink mb-1">{t('postTask.volunteersNeeded')}</label>
                         <input 
                           type="number" 
                           min="1" 
                           value={editMaxVolunteers} 
                           onChange={e => setEditMaxVolunteers(e.target.value)} 
-                          className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-emerald-500 focus:border-emerald-500 text-sm bg-white"
+                          className="w-full px-3 py-2 rounded-2xl border border-sand focus:ring-sage-500 focus:border-sage-500 text-sm bg-white"
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-semibold text-slate-700 mb-1">{t('myTasks.status')}</label>
+                        <label className="block text-xs font-semibold text-ink mb-1">{t('myTasks.status')}</label>
                         <select 
                           value={editStatus} 
                           onChange={e => setEditStatus(e.target.value)}
-                          className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-emerald-500 focus:border-emerald-500 text-sm bg-white"
+                          className="w-full px-3 py-2 rounded-2xl border border-sand focus:ring-sage-500 focus:border-sage-500 text-sm bg-white"
                         >
                           <option value="open">{t('admin.open')}</option>
                           <option value="closed">{t('admin.closed')}</option>
@@ -134,13 +134,13 @@ export default function MyTasks({ user }) {
                   </div>
                   <div className="flex gap-3 pt-5 mt-2">
                     <button 
-                      className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-md transition-colors" 
+                      className="px-4 py-2 bg-sage hover:bg-sage-hover text-white text-sm font-semibold rounded-2xl transition-colors" 
                       onClick={handleUpdate}
                     >
                       {t('common.save')}
                     </button>
                     <button 
-                      className="px-4 py-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-sm font-semibold rounded-md transition-colors" 
+                      className="px-4 py-2 bg-white border border-sand hover:bg-offwhite text-ink text-sm font-semibold rounded-2xl transition-colors" 
                       onClick={() => setEditId(null)}
                     >
                       {t('common.cancel')}
@@ -150,9 +150,9 @@ export default function MyTasks({ user }) {
               ) : (
                 <div className="p-6">
                   <div className="flex justify-between items-start mb-3">
-                    <h3 className="text-xl font-bold text-slate-800 line-clamp-2">{task.title}</h3>
+                    <h3 className="text-xl font-bold text-ink line-clamp-2">{task.title}</h3>
                     <span className={`px-2.5 py-1 text-xs font-bold uppercase tracking-wider rounded-full shrink-0 ${
-                      task.status === 'open' ? 'bg-emerald-100 text-emerald-800' : 
+                      task.status === 'open' ? 'bg-sage-100 text-sage-800' : 
                       task.status === 'closed' ? 'bg-red-100 text-red-800' : 
                       'bg-blue-100 text-blue-800'
                     }`}>
@@ -160,18 +160,18 @@ export default function MyTasks({ user }) {
                     </span>
                   </div>
                   
-                  <p className="text-slate-600 mb-6 line-clamp-3 text-sm">{task.description}</p>
+                  <p className="text-earth mb-6 line-clamp-3 text-sm">{task.description}</p>
                   
                   <div className="flex items-center gap-3 pt-4 border-t border-slate-100 mt-auto">
                     <button 
-                      className="flex-1 py-2 text-center bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-lg transition-colors text-sm" 
+                      className="flex-1 py-2 text-center bg-slate-100 hover:bg-slate-200 text-ink font-semibold rounded-2xl transition-colors text-sm" 
                       onClick={() => startEdit(task)}
                     >
                       {t('myTasks.editTask')}
                     </button>
                     <Link 
                       to={`/tasks/${task.id}`} 
-                      className="flex-1 py-2 text-center bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-semibold rounded-lg transition-colors text-sm"
+                      className="flex-1 py-2 text-center bg-white border border-sand hover:bg-offwhite text-ink font-semibold rounded-2xl transition-colors text-sm"
                     >
                       {t('myTasks.manage')}
                     </Link>

@@ -15,6 +15,15 @@ export default function OrganizationProfile({ user }) {
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('success');
 
+  // Edit Mode States
+  const [isEditing, setIsEditing] = useState(false);
+  const [editName, setEditName] = useState('');
+  const [editDescription, setEditDescription] = useState('');
+  const [editPhone, setEditPhone] = useState('');
+  const [editLogoFile, setEditLogoFile] = useState(null);
+  const [editBannerFile, setEditBannerFile] = useState(null);
+  const [isSaving, setIsSaving] = useState(false);
+
   useEffect(() => {
     fetch(`${API}/organizations/${id}`).then(r => r.json()).then(setOrg);
     loadReviews();
@@ -68,7 +77,64 @@ export default function OrganizationProfile({ user }) {
     }
   };
 
-  if (!org) return <div className="py-20 text-center text-slate-500 font-medium">{t('orgProfile.loading')}</div>;
+  const startEditing = () => {
+    setEditName(org.name || '');
+    setEditDescription(org.description || '');
+    setEditPhone(org.phoneNumber || '');
+    setEditLogoFile(null);
+    setEditBannerFile(null);
+    setIsEditing(true);
+  };
+
+  const handleSaveProfile = async () => {
+    setIsSaving(true);
+    let finalLogoUrl = org.logoUrl;
+    let finalBannerUrl = org.bannerUrl;
+
+    try {
+      if (editLogoFile) {
+        const fd = new FormData();
+        fd.append('file', editLogoFile);
+        const r = await fetch(`${API}/upload`, { method: 'POST', body: fd });
+        if (r.ok) { const d = await r.json(); finalLogoUrl = d.url; }
+      }
+      if (editBannerFile) {
+        const fd = new FormData();
+        fd.append('file', editBannerFile);
+        const r = await fetch(`${API}/upload`, { method: 'POST', body: fd });
+        if (r.ok) { const d = await r.json(); finalBannerUrl = d.url; }
+      }
+
+      const payload = {
+        name: editName,
+        description: editDescription,
+        phoneNumber: editPhone,
+        logoUrl: finalLogoUrl,
+        bannerUrl: finalBannerUrl
+      };
+
+      const res = await fetch(`${API}/organizations/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
+        const updated = await res.json();
+        // keep nested properties (Tasks/Reviews) and just update the top level fields
+        setOrg(prev => ({ ...prev, ...updated }));
+        setIsEditing(false);
+      } else {
+        setMessage('Failed to save profile updates.');
+        setMessageType('error');
+      }
+    } catch (e) {
+      setMessage('Error saving profile.');
+      setMessageType('error');
+    }
+    setIsSaving(false);
+  };
+
+  if (!org) return <div className="py-20 text-center text-earth font-medium">{t('orgProfile.loading')}</div>;
 
   const isStudent = user.role === 'student' || user.role === 'admin';
   const alreadyReviewed = reviews.some(r => r.userId === user.id);
@@ -94,19 +160,32 @@ export default function OrganizationProfile({ user }) {
   );
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 animate-fade-in">
-      {/* Back Link */}
-      <Link to="/organizations" className="inline-flex items-center text-sm text-slate-500 hover:text-emerald-700 transition-colors font-medium">
-        <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path></svg>
-        {t('organizations.title')}
-      </Link>
+    <div className="max-w-4xl mx-auto space-y-8 animate-fade-in pb-10">
+      {/* Top Header */}
+      <div className="flex justify-between items-center">
+        <Link to="/organizations" className="inline-flex items-center text-sm text-earth hover:text-sage-hover transition-colors font-medium">
+          <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path></svg>
+          {t('organizations.title')}
+        </Link>
+        {user.role === 'organization' && user.id === parseInt(id) && !isEditing && (
+          <button onClick={startEditing} className="px-4 py-1.5 text-sm bg-sand/30 hover:bg-sand/60 text-earth font-bold rounded-xl transition-colors">
+            Edit Profile
+          </button>
+        )}
+      </div>
 
       {/* Hero Card */}
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-        <div className="bg-gradient-to-r from-emerald-600 to-emerald-700 h-32"></div>
+      <div className="bg-white rounded-2xl shadow-sm border border-sand overflow-hidden">
+        {org.bannerUrl ? (
+          <div className="h-40 w-full overflow-hidden">
+            <img src={org.bannerUrl} alt="Organization Banner" className="w-full h-full object-cover" />
+          </div>
+        ) : (
+          <div className="bg-gradient-to-r from-sage-600 to-sage-700 h-32"></div>
+        )}
         <div className="px-8 pb-8 -mt-12">
           <div className="flex items-end gap-6 mb-6">
-            <div className="border-4 border-white rounded-xl shadow-lg overflow-hidden shrink-0">
+            <div className="border-4 border-white rounded-2xl shadow-lg overflow-hidden shrink-0">
               <ProfileAvatar
                 src={org.logoUrl}
                 name={org.name}
@@ -116,11 +195,21 @@ export default function OrganizationProfile({ user }) {
                 borderColor="border-transparent"
               />
             </div>
-            <div className="pb-1">
-              <h1 className="text-3xl font-bold text-slate-900 tracking-tight">{org.name}</h1>
+            <div className="pb-1 max-w-[65%]">
+              {isEditing ? (
+                <input 
+                  type="text" 
+                  value={editName} 
+                  onChange={e => setEditName(e.target.value)}
+                  className="w-full text-2xl font-bold border-b border-sand focus:border-sage outline-none mb-2"
+                  placeholder="Organization Name"
+                />
+              ) : (
+                <h1 className="text-3xl font-bold text-ink tracking-tight">{org.name}</h1>
+              )}
               <div className="flex items-center gap-3 mt-2">
                 <StarRating value={Math.round(org.averageRating)} size="w-5 h-5" />
-                <span className="text-sm text-slate-500 font-medium">
+                <span className="text-sm text-earth font-medium">
                   {org.averageRating > 0 ? `${org.averageRating} / 5` : t('organizations.noRatings')}
                   {org.reviewCount > 0 && ` · ${org.reviewCount} review${org.reviewCount !== 1 ? 's' : ''}`}
                 </span>
@@ -128,24 +217,74 @@ export default function OrganizationProfile({ user }) {
             </div>
           </div>
 
-          {org.description && (
-            <p className="text-slate-600 leading-relaxed mb-6">{org.description}</p>
+          {isEditing ? (
+            <div className="mb-6 space-y-4 bg-offwhite p-6 rounded-2xl border border-sand">
+              <h3 className="font-bold text-ink mb-2">Edit Details</h3>
+              <div>
+                <label className="block text-sm font-semibold text-earth mb-1">Description</label>
+                <textarea 
+                  value={editDescription} 
+                  onChange={e => setEditDescription(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl border border-sand focus:ring-2 focus:ring-sage outline-none text-sm text-ink"
+                  rows="3"
+                ></textarea>
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-earth mb-1">Phone Number</label>
+                <input 
+                  type="text" 
+                  value={editPhone} 
+                  onChange={e => setEditPhone(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl border border-sand focus:ring-2 focus:ring-sage outline-none text-sm text-ink"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-earth mb-1">Upload New Logo (Image)</label>
+                <input 
+                  type="file" 
+                  accept="image/*"
+                  onChange={e => setEditLogoFile(e.target.files[0])}
+                  className="text-sm text-earth cursor-pointer file:mr-3 file:py-1 file:px-3 file:border-0 file:rounded-xl file:bg-sand/30 file:text-ink hover:file:bg-sand"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-earth mb-1">Upload New Banner (Image)</label>
+                <input 
+                  type="file" 
+                  accept="image/*"
+                  onChange={e => setEditBannerFile(e.target.files[0])}
+                  className="text-sm text-earth cursor-pointer file:mr-3 file:py-1 file:px-3 file:border-0 file:rounded-xl file:bg-sand/30 file:text-ink hover:file:bg-sand"
+                />
+              </div>
+              <div className="pt-2 flex gap-3">
+                <button onClick={handleSaveProfile} disabled={isSaving} className="px-6 py-2 bg-sage hover:bg-sage-hover text-white font-bold rounded-xl transition-colors">
+                  {isSaving ? 'Saving...' : 'Save Changes'}
+                </button>
+                <button onClick={() => setIsEditing(false)} disabled={isSaving} className="px-6 py-2 bg-slate-200 hover:bg-slate-300 text-ink font-bold rounded-xl transition-colors">
+                  Cancel
+                </button>
+              </div>
+            </div>
+          ) : (
+            org.description && (
+              <p className="text-earth leading-relaxed mb-6">{org.description}</p>
+            )
           )}
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="bg-slate-50 rounded-lg p-4 border border-slate-100">
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">{t('orgProfile.email')}</p>
-              <p className="text-sm font-medium text-slate-800 truncate">{org.email}</p>
+            <div className="bg-offwhite rounded-2xl p-4 border border-slate-100">
+              <p className="text-xs font-semibold text-earth uppercase tracking-wider mb-1">{t('orgProfile.email')}</p>
+              <p className="text-sm font-medium text-ink truncate">{org.email}</p>
             </div>
             {org.phoneNumber && (
-              <div className="bg-slate-50 rounded-lg p-4 border border-slate-100">
-                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">{t('orgProfile.phone')}</p>
-                <p className="text-sm font-medium text-slate-800">{org.phoneNumber}</p>
+              <div className="bg-offwhite rounded-2xl p-4 border border-slate-100">
+                <p className="text-xs font-semibold text-earth uppercase tracking-wider mb-1">{t('orgProfile.phone')}</p>
+                <p className="text-sm font-medium text-ink">{org.phoneNumber}</p>
               </div>
             )}
-            <div className="bg-slate-50 rounded-lg p-4 border border-slate-100">
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">{t('orgProfile.tasks')}</p>
-              <p className="text-sm font-medium text-slate-800">{org.taskCount}</p>
+            <div className="bg-offwhite rounded-2xl p-4 border border-slate-100">
+              <p className="text-xs font-semibold text-earth uppercase tracking-wider mb-1">{t('orgProfile.tasks')}</p>
+              <p className="text-sm font-medium text-ink">{org.taskCount}</p>
             </div>
           </div>
         </div>
@@ -154,25 +293,25 @@ export default function OrganizationProfile({ user }) {
       {/* Tasks Section */}
       {org.tasks && org.tasks.length > 0 && (
         <div>
-          <h2 className="text-2xl font-bold text-slate-900 mb-4">{t('orgProfile.tasks')}</h2>
+          <h2 className="text-2xl font-bold text-ink mb-4">{t('orgProfile.tasks')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 stagger-children">
             {org.tasks.map(task => (
               <Link
                 key={task.id}
                 to={`/tasks/${task.id}`}
-                className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 card-hover group animate-fade-in"
+                className="bg-white rounded-2xl shadow-sm border border-sand p-5 card-hover group animate-fade-in"
               >
                 <div className="flex justify-between items-start mb-2">
-                  <h3 className="font-bold text-slate-800 group-hover:text-emerald-700 transition-colors line-clamp-1">{task.title}</h3>
+                  <h3 className="font-bold text-ink group-hover:text-sage-700 transition-colors line-clamp-1">{task.title}</h3>
                   <span className={`px-2 py-0.5 text-xs font-bold uppercase rounded-full shrink-0 ml-2 ${
-                    task.status === 'open' ? 'bg-emerald-100 text-emerald-800' :
+                    task.status === 'open' ? 'bg-sage-100 text-sage-800' :
                     task.status === 'closed' ? 'bg-red-100 text-red-800' :
                     'bg-blue-100 text-blue-800'
                   }`}>
                     {task.status}
                   </span>
                 </div>
-                {task.description && <p className="text-sm text-slate-600 line-clamp-2">{task.description}</p>}
+                {task.description && <p className="text-sm text-earth line-clamp-2">{task.description}</p>}
               </Link>
             ))}
           </div>
@@ -181,41 +320,41 @@ export default function OrganizationProfile({ user }) {
 
       {/* Reviews Section */}
       <div>
-        <h2 className="text-2xl font-bold text-slate-900 mb-6">{t('orgProfile.reviews')}</h2>
+        <h2 className="text-2xl font-bold text-ink mb-6">{t('orgProfile.reviews')}</h2>
 
         {message && (
           <div className={`border-l-4 p-4 mb-6 rounded-r-md animate-slide-up ${
-            messageType === 'success' ? 'bg-emerald-50 border-emerald-500' : 'bg-red-50 border-red-500'
+            messageType === 'success' ? 'bg-sage-50 border-sage-500' : 'bg-red-50 border-red-500'
           }`}>
-            <p className={`text-sm font-medium ${messageType === 'success' ? 'text-emerald-700' : 'text-red-700'}`}>{message}</p>
+            <p className={`text-sm font-medium ${messageType === 'success' ? 'text-sage-700' : 'text-red-700'}`}>{message}</p>
           </div>
         )}
 
         {/* Submit Review Form */}
         {isStudent && !alreadyReviewed && (
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
-            <h3 className="text-lg font-bold text-slate-800 mb-4">{t('orgProfile.writeReview')}</h3>
+          <div className="bg-white rounded-2xl shadow-sm border border-sand p-6 mb-6">
+            <h3 className="text-lg font-bold text-ink mb-4">{t('orgProfile.writeReview')}</h3>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">{t('orgProfile.yourRating')}</label>
+                <label className="block text-sm font-semibold text-ink mb-2">{t('orgProfile.yourRating')}</label>
                 <StarRating
                   interactive={true}
                   size="w-8 h-8"
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1">{t('orgProfile.comment')}</label>
+                <label className="block text-sm font-semibold text-ink mb-1">{t('orgProfile.comment')}</label>
                 <textarea
                   value={comment}
                   onChange={e => setComment(e.target.value)}
                   rows="3"
                   placeholder={t('orgProfile.commentPlaceholder')}
-                  className="w-full px-3 py-2 rounded-md border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm"
+                  className="w-full px-3 py-2 rounded-2xl border border-sand focus:ring-2 focus:ring-sage-500 focus:border-sage-500 text-sm"
                 />
               </div>
               <button
                 onClick={handleSubmitReview}
-                className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg transition-colors text-sm"
+                className="px-6 py-2.5 bg-sage hover:bg-sage-hover text-white font-semibold rounded-2xl transition-colors text-sm"
               >
                 {t('orgProfile.submitReview')}
               </button>
@@ -224,21 +363,21 @@ export default function OrganizationProfile({ user }) {
         )}
 
         {isStudent && alreadyReviewed && (
-          <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 p-4 rounded-lg mb-6 flex items-center">
-            <svg className="w-5 h-5 mr-2 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          <div className="bg-sage-50 border border-sage-200 text-sage-800 p-4 rounded-2xl mb-6 flex items-center">
+            <svg className="w-5 h-5 mr-2 text-sage-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             <span className="font-medium text-sm">You've already reviewed this organization.</span>
           </div>
         )}
 
         {/* Reviews List */}
         {reviews.length === 0 ? (
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-8 text-center">
-            <p className="text-slate-500">{t('orgProfile.noReviews')}</p>
+          <div className="bg-white rounded-2xl shadow-sm border border-sand p-8 text-center">
+            <p className="text-earth">{t('orgProfile.noReviews')}</p>
           </div>
         ) : (
           <div className="space-y-4 stagger-children">
             {reviews.map(r => (
-              <div key={r.id} className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 animate-fade-in">
+              <div key={r.id} className="bg-white rounded-2xl shadow-sm border border-sand p-5 animate-fade-in">
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex items-center gap-3">
                     <ProfileAvatar
@@ -247,7 +386,7 @@ export default function OrganizationProfile({ user }) {
                       size="sm"
                     />
                     <div>
-                      <p className="font-semibold text-slate-800 text-sm">{r.userName}</p>
+                      <p className="font-semibold text-ink text-sm">{r.userName}</p>
                       <p className="text-xs text-slate-400">{new Date(r.createdAt).toLocaleDateString()}</p>
                     </div>
                   </div>
@@ -264,7 +403,7 @@ export default function OrganizationProfile({ user }) {
                     )}
                   </div>
                 </div>
-                {r.comment && <p className="text-sm text-slate-600 mt-2 leading-relaxed">{r.comment}</p>}
+                {r.comment && <p className="text-sm text-earth mt-2 leading-relaxed">{r.comment}</p>}
               </div>
             ))}
           </div>

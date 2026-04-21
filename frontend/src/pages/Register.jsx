@@ -64,10 +64,10 @@ export default function Register({ onLogin }) {
   };
 
   return (
-    <div className="w-full max-w-lg bg-white rounded-xl shadow-lg border border-slate-100 p-8 my-8 animate-scale-in">
+    <div className="w-full max-w-lg bg-white rounded-2xl shadow-lg border border-slate-100 p-8 my-8 animate-scale-in">
       <div className="text-center mb-8">
-        <h1 className="text-2xl font-bold text-slate-800 mb-2">{t('register.title')}</h1>
-        <p className="text-slate-500 text-sm">{t('register.subtitle')}</p>
+        <h1 className="text-2xl font-bold text-ink mb-2">{t('register.title')}</h1>
+        <p className="text-earth text-sm">{t('register.subtitle')}</p>
       </div>
 
       {error && (
@@ -79,17 +79,17 @@ export default function Register({ onLogin }) {
       <form onSubmit={handleSubmit} className="space-y-5">
         
         {/* Role Selector toggles */}
-        <div className="flex p-1 bg-slate-100 rounded-lg">
+        <div className="flex p-1 bg-slate-100 rounded-2xl">
           <button 
             type="button"
-            className={`flex-1 py-2 text-sm font-semibold rounded-md transition-all ${role === 'student' ? 'bg-white shadow-sm text-emerald-700' : 'text-slate-500 hover:text-slate-700'}`}
+            className={`flex-1 py-2 text-sm font-semibold rounded-2xl transition-all ${role === 'student' ? 'bg-white shadow-sm text-sage-700' : 'text-earth hover:text-ink'}`}
             onClick={() => setRole('student')}
           >
             {t('register.studentTab')}
           </button>
           <button 
             type="button"
-            className={`flex-1 py-2 text-sm font-semibold rounded-md transition-all ${role === 'organization' ? 'bg-white shadow-sm text-emerald-700' : 'text-slate-500 hover:text-slate-700'}`}
+            className={`flex-1 py-2 text-sm font-semibold rounded-2xl transition-all ${role === 'organization' ? 'bg-white shadow-sm text-sage-700' : 'text-earth hover:text-ink'}`}
             onClick={() => setRole('organization')}
           >
             {t('register.orgTab')}
@@ -98,57 +98,57 @@ export default function Register({ onLogin }) {
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div className="col-span-1 md:col-span-2">
-            <label className="block text-sm font-semibold text-slate-700 mb-1.5">{t('register.email')}</label>
+            <label className="block text-sm font-semibold text-ink mb-1.5">{t('register.email')}</label>
             <input 
               type="email" 
               value={email} 
               onChange={e => setEmail(e.target.value)} 
               required 
-              className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all text-slate-700"
+              className="w-full px-4 py-2.5 rounded-2xl border border-sand focus:ring-2 focus:ring-sage-500 focus:border-sage-500 outline-none transition-all text-ink"
             />
           </div>
 
           <div className="col-span-1 md:col-span-2">
-            <label className="block text-sm font-semibold text-slate-700 mb-1.5">{t('register.password')}</label>
+            <label className="block text-sm font-semibold text-ink mb-1.5">{t('register.password')}</label>
             <input 
               type="password" 
               value={password} 
               onChange={e => setPassword(e.target.value)} 
               required 
-              className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all text-slate-700"
+              className="w-full px-4 py-2.5 rounded-2xl border border-sand focus:ring-2 focus:ring-sage-500 focus:border-sage-500 outline-none transition-all text-ink"
             />
           </div>
 
           <div className="col-span-1 md:col-span-2">
-            <label className="block text-sm font-semibold text-slate-700 mb-1.5">{t('register.phone')}</label>
+            <label className="block text-sm font-semibold text-ink mb-1.5">{t('register.phone')}</label>
             <input 
               type="text" 
               value={phoneNumber} 
               onChange={e => setPhoneNumber(e.target.value)} 
-              className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all text-slate-700"
+              className="w-full px-4 py-2.5 rounded-2xl border border-sand focus:ring-2 focus:ring-sage-500 focus:border-sage-500 outline-none transition-all text-ink"
             />
           </div>
 
           {role === 'student' && (
             <>
               <div className="col-span-1 md:col-span-2">
-                <label className="block text-sm font-semibold text-slate-700 mb-1.5">{t('register.fullName')}</label>
+                <label className="block text-sm font-semibold text-ink mb-1.5">{t('register.fullName')}</label>
                 <input 
                   type="text"
                   value={fullName} 
                   onChange={e => setFullName(e.target.value)} 
                   required 
-                  className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all text-slate-700"
+                  className="w-full px-4 py-2.5 rounded-2xl border border-sand focus:ring-2 focus:ring-sage-500 focus:border-sage-500 outline-none transition-all text-ink"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1.5">{t('register.universityId')}</label>
+                <label className="block text-sm font-semibold text-ink mb-1.5">{t('register.universityId')}</label>
                 <input 
                   type="text"
                   value={universityId} 
                   onChange={e => setUniversityId(e.target.value)} 
-                  className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all text-slate-700"
+                  className="w-full px-4 py-2.5 rounded-2xl border border-sand focus:ring-2 focus:ring-sage-500 focus:border-sage-500 outline-none transition-all text-ink"
                 />
               </div>
 
@@ -158,9 +158,9 @@ export default function Register({ onLogin }) {
                   id="vc" 
                   checked={takingVolunteeringCourse} 
                   onChange={e => setTakingVolunteeringCourse(e.target.checked)} 
-                  className="w-5 h-5 text-emerald-600 border-slate-300 rounded focus:ring-emerald-500 cursor-pointer"
+                  className="w-5 h-5 text-sage-600 border-sand rounded focus:ring-sage-500 cursor-pointer"
                 />
-                <label htmlFor="vc" className="ml-2 block text-sm font-medium text-slate-700 cursor-pointer">
+                <label htmlFor="vc" className="ml-2 block text-sm font-medium text-ink cursor-pointer">
                   {t('register.takingCourse')}
                 </label>
               </div>
@@ -169,13 +169,13 @@ export default function Register({ onLogin }) {
 
           {role === 'organization' && (
             <div className="col-span-1 md:col-span-2">
-              <label className="block text-sm font-semibold text-slate-700 mb-1.5">{t('register.orgName')}</label>
+              <label className="block text-sm font-semibold text-ink mb-1.5">{t('register.orgName')}</label>
               <input 
                 type="text"
                 value={orgName} 
                 onChange={e => setOrgName(e.target.value)} 
                 required 
-                className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all text-slate-700"
+                className="w-full px-4 py-2.5 rounded-2xl border border-sand focus:ring-2 focus:ring-sage-500 focus:border-sage-500 outline-none transition-all text-ink"
               />
             </div>
           )}
@@ -184,16 +184,16 @@ export default function Register({ onLogin }) {
 
         <button 
           type="submit" 
-          className="w-full py-3 px-4 mt-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
+          className="w-full py-3 px-4 mt-4 bg-sage hover:bg-sage-hover text-white font-semibold rounded-2xl shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sage-500"
         >
           {t('register.submit')}
         </button>
       </form>
 
       <div className="mt-8 text-center border-t border-slate-100 pt-6">
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-earth">
           {t('register.hasAccount')}{' '}
-          <Link to="/login" className="font-semibold text-emerald-600 hover:text-emerald-700 transition-colors">
+          <Link to="/login" className="font-semibold text-sage-600 hover:text-sage-700 transition-colors">
             {t('register.loginLink')}
           </Link>
         </p>

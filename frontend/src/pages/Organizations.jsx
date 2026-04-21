@@ -32,8 +32,8 @@ export default function Organizations() {
   return (
     <div className="max-w-6xl mx-auto animate-fade-in">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-900 tracking-tight">{t('organizations.title')}</h1>
-        <p className="text-slate-500 mt-2">{t('organizations.subtitle')}</p>
+        <h1 className="text-3xl font-bold text-ink tracking-tight">{t('organizations.title')}</h1>
+        <p className="text-earth mt-2">{t('organizations.subtitle')}</p>
       </div>
 
       {/* Search */}
@@ -47,17 +47,17 @@ export default function Organizations() {
             placeholder={t('organizations.searchPlaceholder')}
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm bg-white"
+            className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-sand focus:ring-2 focus:ring-sage-500 focus:border-sage-500 text-sm bg-white"
           />
         </div>
       </div>
 
       {filtered.length === 0 ? (
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-12 text-center">
+        <div className="bg-white rounded-2xl shadow-sm border border-sand p-12 text-center">
           <svg className="w-12 h-12 text-slate-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
           </svg>
-          <p className="text-slate-500 text-lg">{t('organizations.noOrgs')}</p>
+          <p className="text-earth text-lg">{t('organizations.noOrgs')}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 stagger-children">
@@ -65,7 +65,7 @@ export default function Organizations() {
             <Link
               key={org.id}
               to={`/organizations/${org.id}`}
-              className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden card-hover group animate-fade-in"
+              className="bg-white rounded-2xl shadow-sm border border-sand overflow-hidden card-hover group animate-fade-in"
             >
               <div className="p-6">
                 <div className="flex items-center gap-4 mb-4">
@@ -74,27 +74,27 @@ export default function Organizations() {
                     name={org.name}
                     size="lg"
                     clickable={false}
-                    className="!rounded-xl"
+                    className="!rounded-2xl"
                   />
                   <div className="min-w-0">
-                    <h3 className="text-lg font-bold text-slate-800 group-hover:text-emerald-700 transition-colors truncate">{org.name}</h3>
-                    <p className="text-sm text-slate-500 truncate">{org.email}</p>
+                    <h3 className="text-lg font-bold text-ink group-hover:text-sage-700 transition-colors truncate">{org.name}</h3>
+                    <p className="text-sm text-earth truncate">{org.email}</p>
                   </div>
                 </div>
 
                 {org.description && (
-                  <p className="text-sm text-slate-600 mb-4 line-clamp-2">{org.description}</p>
+                  <p className="text-sm text-earth mb-4 line-clamp-2">{org.description}</p>
                 )}
 
                 <div className="flex items-center justify-between pt-4 border-t border-slate-100">
                   <div className="flex items-center gap-1.5">
                     <StarDisplay rating={org.averageRating} />
-                    <span className="text-xs text-slate-500 ml-1">
+                    <span className="text-xs text-earth ml-1">
                       {org.averageRating > 0 ? `${org.averageRating}` : t('organizations.noRatings')}
                       {org.reviewCount > 0 && ` (${org.reviewCount})`}
                     </span>
                   </div>
-                  <span className="text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded-full font-medium">
+                  <span className="text-xs text-earth bg-slate-100 px-2 py-1 rounded-full font-medium">
                     {org.taskCount} {org.taskCount === 1 ? t('organizations.task') : t('organizations.tasks')}
                   </span>
                 </div>

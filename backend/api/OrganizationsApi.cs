@@ -23,6 +23,7 @@ public static class OrganizationsApi
                 o.Email,
                 o.PhoneNumber,
                 o.LogoUrl,
+                o.BannerUrl,
                 o.Description,
                 o.CreatedAt,
                 TaskCount = o.Tasks.Count,
@@ -48,6 +49,7 @@ public static class OrganizationsApi
                 org.Email,
                 org.PhoneNumber,
                 org.LogoUrl,
+                org.BannerUrl,
                 org.Description,
                 org.CreatedAt,
                 TaskCount = org.Tasks.Count,
@@ -66,6 +68,7 @@ public static class OrganizationsApi
             org.Name = input.Name;
             org.PhoneNumber = input.PhoneNumber;
             org.LogoUrl = input.LogoUrl;
+            org.BannerUrl = input.BannerUrl;
             org.Description = input.Description;
 
             await db.SaveChangesAsync();

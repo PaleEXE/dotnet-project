@@ -63,6 +63,7 @@ public class AppDbContext : DbContext
             e.Property(o => o.PasswordHash).HasMaxLength(255).IsRequired();
             e.Property(o => o.PhoneNumber).HasMaxLength(20);
             e.Property(o => o.LogoUrl).HasMaxLength(500);
+            e.Property(o => o.BannerUrl).HasMaxLength(500);
             e.Property(o => o.Description).HasMaxLength(1000);
             e.Property(o => o.IsApproved).HasDefaultValue(false);
             e.Property(o => o.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");

@@ -125,8 +125,8 @@ export default function PostTask({ user }) {
   return (
     <div className="max-w-3xl mx-auto animate-fade-in">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-900">{t('postTask.title')}</h1>
-        <p className="text-slate-500 mt-2">{t('postTask.subtitle')}</p>
+        <h1 className="text-3xl font-bold text-ink">{t('postTask.title')}</h1>
+        <p className="text-earth mt-2">{t('postTask.subtitle')}</p>
       </div>
 
       {error && (
@@ -135,59 +135,59 @@ export default function PostTask({ user }) {
          </div>
       )}
 
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-8">
+      <div className="bg-white rounded-2xl shadow-sm border border-sand p-8">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-1.5">{t('postTask.taskTitle')}</label>
+            <label className="block text-sm font-semibold text-ink mb-1.5">{t('postTask.taskTitle')}</label>
             <input 
               value={title} 
               onChange={e => setTitle(e.target.value)} 
               required 
-              className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all text-slate-800"
+              className="w-full px-4 py-2.5 rounded-2xl border border-sand focus:ring-2 focus:ring-sage-500 focus:border-sage-500 outline-none transition-all text-ink"
               placeholder={t('postTask.titlePlaceholder')}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-1.5">{t('postTask.description')}</label>
+            <label className="block text-sm font-semibold text-ink mb-1.5">{t('postTask.description')}</label>
             <textarea 
               value={description} 
               onChange={e => setDescription(e.target.value)} 
               required 
               rows="5"
-              className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all text-slate-800 resize-y"
+              className="w-full px-4 py-3 rounded-2xl border border-sand focus:ring-2 focus:ring-sage-500 focus:border-sage-500 outline-none transition-all text-ink resize-y"
               placeholder={t('postTask.descriptionPlaceholder')}
             />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1.5">{t('postTask.volunteersNeeded')}</label>
+              <label className="block text-sm font-semibold text-ink mb-1.5">{t('postTask.volunteersNeeded')}</label>
               <input 
                 type="number" 
                 min="1" 
                 value={maxVolunteers} 
                 onChange={e => setMaxVolunteers(e.target.value)} 
-                className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all text-slate-800"
+                className="w-full px-4 py-2.5 rounded-2xl border border-sand focus:ring-2 focus:ring-sage-500 focus:border-sage-500 outline-none transition-all text-ink"
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1.5">{t('postTask.startDate')}</label>
+              <label className="block text-sm font-semibold text-ink mb-1.5">{t('postTask.startDate')}</label>
               <input 
                 type="date" 
                 value={startDate} 
                 onChange={e => setStartDate(e.target.value)} 
-                className={`w-full px-4 py-2.5 rounded-lg border outline-none transition-all text-slate-800 ${dateError ? 'date-error-field' : 'border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500'}`}
+                className={`w-full px-4 py-2.5 rounded-2xl border outline-none transition-all text-ink ${dateError ? 'date-error-field' : 'border-sand focus:ring-2 focus:ring-sage-500 focus:border-sage-500'}`}
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1.5">{t('postTask.endDate')}</label>
+              <label className="block text-sm font-semibold text-ink mb-1.5">{t('postTask.endDate')}</label>
               <input 
                 type="date" 
                 value={endDate} 
                 onChange={e => setEndDate(e.target.value)} 
                 min={startDate || undefined}
-                className={`w-full px-4 py-2.5 rounded-lg border outline-none transition-all text-slate-800 ${dateError ? 'date-error-field' : 'border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500'}`}
+                className={`w-full px-4 py-2.5 rounded-2xl border outline-none transition-all text-ink ${dateError ? 'date-error-field' : 'border-sand focus:ring-2 focus:ring-sage-500 focus:border-sage-500'}`}
               />
             </div>
           </div>
@@ -203,17 +203,17 @@ export default function PostTask({ user }) {
           )}
 
           <div className="pt-4 border-t border-slate-100">
-            <label className="block text-sm font-semibold text-slate-700 mb-3">{t('postTask.tags')}</label>
+            <label className="block text-sm font-semibold text-ink mb-3">{t('postTask.tags')}</label>
             <div className="flex flex-wrap gap-3 mb-4">
               {availableTags.map(tag => (
-                <label key={tag.id} className="inline-flex items-center cursor-pointer bg-slate-50 border border-slate-200 rounded-full px-3 py-1.5 hover:bg-slate-100 transition-colors">
+                <label key={tag.id} className="inline-flex items-center cursor-pointer bg-offwhite border border-sand rounded-full px-3 py-1.5 hover:bg-slate-100 transition-colors">
                   <input 
                     type="checkbox" 
                     checked={selectedTags.includes(tag.id)} 
                     onChange={() => handleTagToggle(tag.id)} 
-                    className="w-4 h-4 text-emerald-600 border-slate-300 rounded focus:ring-emerald-500 transition-none"
+                    className="w-4 h-4 text-sage-600 border-sand rounded focus:ring-sage-500 transition-none"
                   />
-                  <span className="ml-2 text-sm text-slate-700 font-medium">{tag.name}</span>
+                  <span className="ml-2 text-sm text-ink font-medium">{tag.name}</span>
                 </label>
               ))}
             </div>
@@ -224,12 +224,12 @@ export default function PostTask({ user }) {
                 placeholder={t('postTask.newTagPlaceholder')} 
                 value={newTag} 
                 onChange={e => setNewTag(e.target.value)} 
-                className="flex-1 px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none text-sm text-slate-800"
+                className="flex-1 px-4 py-2 rounded-2xl border border-sand focus:ring-2 focus:ring-sage-500 focus:border-sage-500 outline-none text-sm text-ink"
               />
               <button 
                 type="button" 
                 onClick={handleCreateTag}
-                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-lg transition-colors text-sm border border-slate-200"
+                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-ink font-medium rounded-2xl transition-colors text-sm border border-sand"
               >
                 {t('postTask.addTag')}
               </button>
@@ -237,21 +237,21 @@ export default function PostTask({ user }) {
           </div>
 
           <div className="pt-4 border-t border-slate-100">
-            <label className="block text-sm font-semibold text-slate-700 mb-1.5">{t('postTask.coverImage')}</label>
+            <label className="block text-sm font-semibold text-ink mb-1.5">{t('postTask.coverImage')}</label>
             <input 
               type="file" 
               accept="image/*"
               onChange={e => setImageFile(e.target.files[0])} 
-              className="w-full text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100"
+              className="w-full text-earth file:mr-4 file:py-2.5 file:px-4 file:rounded-2xl file:border-0 file:text-sm file:font-semibold file:bg-sage-50 file:text-sage-700 hover:file:bg-sage-100"
             />
-            {imageFile && <p className="mt-2 text-xs text-emerald-600 font-medium pb-2">{t('postTask.selected')}: {imageFile.name}</p>}
+            {imageFile && <p className="mt-2 text-xs text-sage-600 font-medium pb-2">{t('postTask.selected')}: {imageFile.name}</p>}
           </div>
 
           <div className="pt-6">
             <button 
               type="submit" 
               disabled={uploading || !!dateError}
-              className={`w-full md:w-auto px-8 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg shadow-sm transition-colors text-base ${(uploading || dateError) ? 'opacity-70 cursor-not-allowed' : ''}`}
+              className={`w-full md:w-auto px-8 py-3 bg-sage hover:bg-sage-hover text-white font-semibold rounded-2xl shadow-sm transition-colors text-base ${(uploading || dateError) ? 'opacity-70 cursor-not-allowed' : ''}`}
             >
               {uploading ? t('postTask.submitting') : t('postTask.submit')}
             </button>

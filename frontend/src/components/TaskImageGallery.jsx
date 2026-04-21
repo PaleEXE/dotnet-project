@@ -59,7 +59,7 @@ export default function TaskImageGallery({ images = [], mode = 'card' }) {
   // Detail mode: full scrollable gallery
   return (
     <>
-      <div className="h-64 w-full bg-slate-100 border-b border-slate-200 overflow-hidden relative">
+      <div className="h-64 w-full bg-slate-100 border-b border-sand overflow-hidden relative">
         <div className="flex h-full w-full overflow-x-auto snap-x snap-mandatory scrollbar-hide">
           {images.map((img) => (
             <div
