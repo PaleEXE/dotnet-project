@@ -45,8 +45,8 @@ export default function OrganizationProfile({ user }) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        organizationId: parseInt(id),
-        userId: user.id,
+        organization_id: parseInt(id),
+        user_id: user.id,
         rating,
         comment: comment.trim() || null,
       }),
@@ -80,7 +80,7 @@ export default function OrganizationProfile({ user }) {
   const startEditing = () => {
     setEditName(org.name || '');
     setEditDescription(org.description || '');
-    setEditPhone(org.phoneNumber || '');
+    setEditPhone(org.phone_number || '');
     setEditLogoFile(null);
     setEditBannerFile(null);
     setIsEditing(true);
@@ -88,8 +88,8 @@ export default function OrganizationProfile({ user }) {
 
   const handleSaveProfile = async () => {
     setIsSaving(true);
-    let finalLogoUrl = org.logoUrl;
-    let finalBannerUrl = org.bannerUrl;
+    let finalLogoUrl = org.logo_url;
+    let finalBannerUrl = org.banner_url;
 
     try {
       if (editLogoFile) {
@@ -108,9 +108,9 @@ export default function OrganizationProfile({ user }) {
       const payload = {
         name: editName,
         description: editDescription,
-        phoneNumber: editPhone,
-        logoUrl: finalLogoUrl,
-        bannerUrl: finalBannerUrl
+        phone_number: editPhone,
+        logo_url: finalLogoUrl,
+        banner_url: finalBannerUrl
       };
 
       const res = await fetch(`${API}/organizations/${id}`, {
@@ -137,7 +137,7 @@ export default function OrganizationProfile({ user }) {
   if (!org) return <div className="py-20 text-center text-earth font-medium">{t('orgProfile.loading')}</div>;
 
   const isStudent = user.role === 'student' || user.role === 'admin';
-  const alreadyReviewed = reviews.some(r => r.userId === user.id);
+  const alreadyReviewed = reviews.some(r => r.user_id === user.id);
 
   const StarRating = ({ value, interactive = false, size = 'w-5 h-5' }) => (
     <div className="flex items-center gap-0.5">
@@ -176,9 +176,9 @@ export default function OrganizationProfile({ user }) {
 
       {/* Hero Card */}
       <div className="bg-white rounded-2xl shadow-sm border border-sand overflow-hidden">
-        {org.bannerUrl ? (
+        {org.banner_url ? (
           <div className="h-40 w-full overflow-hidden">
-            <img src={org.bannerUrl} alt="Organization Banner" className="w-full h-full object-cover" />
+            <img src={org.banner_url} alt="Organization Banner" className="w-full h-full object-cover" />
           </div>
         ) : (
           <div className="bg-gradient-to-r from-sage-600 to-sage-700 h-32"></div>
@@ -187,10 +187,10 @@ export default function OrganizationProfile({ user }) {
           <div className="flex items-end gap-6 mb-6">
             <div className="border-4 border-white rounded-2xl shadow-lg overflow-hidden shrink-0">
               <ProfileAvatar
-                src={org.logoUrl}
+                src={org.logo_url}
                 name={org.name}
                 size="xl"
-                clickable={!!org.logoUrl}
+                clickable={!!org.logo_url}
                 className="!rounded-none"
                 borderColor="border-transparent"
               />
@@ -208,10 +208,10 @@ export default function OrganizationProfile({ user }) {
                 <h1 className="text-3xl font-bold text-ink tracking-tight">{org.name}</h1>
               )}
               <div className="flex items-center gap-3 mt-2">
-                <StarRating value={Math.round(org.averageRating)} size="w-5 h-5" />
+                <StarRating value={Math.round(org.average_rating)} size="w-5 h-5" />
                 <span className="text-sm text-earth font-medium">
-                  {org.averageRating > 0 ? `${org.averageRating} / 5` : t('organizations.noRatings')}
-                  {org.reviewCount > 0 && ` · ${org.reviewCount} review${org.reviewCount !== 1 ? 's' : ''}`}
+                  {org.average_rating > 0 ? `${org.average_rating} / 5` : t('organizations.noRatings')}
+                  {org.review_count > 0 && ` · ${org.review_count} review${org.review_count !== 1 ? 's' : ''}`}
                 </span>
               </div>
             </div>
@@ -276,15 +276,15 @@ export default function OrganizationProfile({ user }) {
               <p className="text-xs font-semibold text-earth uppercase tracking-wider mb-1">{t('orgProfile.email')}</p>
               <p className="text-sm font-medium text-ink truncate">{org.email}</p>
             </div>
-            {org.phoneNumber && (
+            {org.phone_number && (
               <div className="bg-offwhite rounded-2xl p-4 border border-slate-100">
                 <p className="text-xs font-semibold text-earth uppercase tracking-wider mb-1">{t('orgProfile.phone')}</p>
-                <p className="text-sm font-medium text-ink">{org.phoneNumber}</p>
+                <p className="text-sm font-medium text-ink">{org.phone_number}</p>
               </div>
             )}
             <div className="bg-offwhite rounded-2xl p-4 border border-slate-100">
               <p className="text-xs font-semibold text-earth uppercase tracking-wider mb-1">{t('orgProfile.tasks')}</p>
-              <p className="text-sm font-medium text-ink">{org.taskCount}</p>
+              <p className="text-sm font-medium text-ink">{org.task_count}</p>
             </div>
           </div>
         </div>
@@ -381,18 +381,18 @@ export default function OrganizationProfile({ user }) {
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex items-center gap-3">
                     <ProfileAvatar
-                      src={r.userPicture}
-                      name={r.userName || '?'}
+                      src={r.user?.profile_picture_url}
+                      name={r.user?.full_name || '?'}
                       size="sm"
                     />
                     <div>
-                      <p className="font-semibold text-ink text-sm">{r.userName}</p>
-                      <p className="text-xs text-slate-400">{new Date(r.createdAt).toLocaleDateString()}</p>
+                      <p className="font-semibold text-ink text-sm">{r.user?.full_name}</p>
+                      <p className="text-xs text-slate-400">{new Date(r.created_at).toLocaleDateString()}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <StarRating value={r.rating} size="w-4 h-4" />
-                    {r.userId === user.id && (
+                    {r.user_id === user.id && (
                       <button
                         onClick={() => handleDeleteReview(r.id)}
                         className="text-slate-400 hover:text-red-500 transition-colors"

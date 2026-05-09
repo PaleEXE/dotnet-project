@@ -224,12 +224,12 @@ export default function AdminPanel({ user }) {
       {/* ── Dashboard ── */}
       {tab === 'Dashboard' && stats && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 stagger-children">
-          <StatCard label={t('admin.userCount')} value={stats.userCount} icon="👤" />
-          <StatCard label={t('admin.orgCount')} value={stats.orgCount} icon="🏢" />
-          <StatCard label={t('admin.taskCount')} value={stats.taskCount} icon="📋" />
-          <StatCard label={t('admin.volunteerCount')} value={stats.volunteerCount} icon="🤝" />
-          <StatCard label={t('admin.totalHours')} value={stats.totalHours} icon="⏱️" />
-          <StatCard label={t('admin.tagCount')} value={stats.tagCount} icon="🏷️" />
+          <StatCard label={t('admin.user_count')} value={stats.user_count} icon="👤" />
+          <StatCard label={t('admin.org_count')} value={stats.org_count} icon="🏢" />
+          <StatCard label={t('admin.task_count')} value={stats.task_count} icon="📋" />
+          <StatCard label={t('admin.volunteer_count')} value={stats.volunteer_count} icon="🤝" />
+          <StatCard label={t('admin.total_hours')} value={stats.total_hours} icon="⏱️" />
+          <StatCard label={t('admin.tag_count')} value={stats.tag_count} icon="🏷️" />
         </div>
       )}
 
@@ -237,25 +237,25 @@ export default function AdminPanel({ user }) {
       {tab === 'Users' && (
         <Table headers={[t('admin.id'), t('admin.name'), t('admin.email'), t('admin.role'), t('admin.univId'), t('admin.statusLabel'), t('admin.created'), t('admin.actions')]}>
           {users.map(u => (
-            <tr key={u.id} className={`hover:bg-offwhite transition-colors ${u.isBlocked ? 'bg-red-50/50' : ''}`}>
+            <tr key={u.id} className={`hover:bg-offwhite transition-colors ${u.is_blocked ? 'bg-red-50/50' : ''}`}>
               <Td className="font-mono text-slate-400">{u.id}</Td>
-              <Td className="font-semibold text-ink">{u.fullName}</Td>
+              <Td className="font-semibold text-ink">{u.full_name}</Td>
               <Td className="text-earth">{u.email}</Td>
               <Td><Badge text={u.role} color={u.role === 'admin' ? 'purple' : 'blue'} /></Td>
-              <Td className="text-earth">{u.universityId || '—'}</Td>
+              <Td className="text-earth">{u.university_id || '—'}</Td>
               <Td>
-                {u.isBlocked
+                {u.is_blocked
                   ? <Badge text={t('admin.blocked')} color="red" />
                   : <Badge text={t('admin.active')} color="sage" />
                 }
               </Td>
-              <Td className="text-earth text-xs">{u.createdAt?.split('T')[0]}</Td>
+              <Td className="text-earth text-xs">{u.created_at?.split('T')[0]}</Td>
               <Td>
                 <div className="flex gap-1.5 flex-wrap">
                   {u.id !== 1 && (
                     <>
-                      <ActionBtn onClick={() => toggleBlock(u.id)} color={u.isBlocked ? 'sage' : 'orange'}>
-                        {u.isBlocked ? t('admin.unblock') : t('admin.block')}
+                      <ActionBtn onClick={() => toggleBlock(u.id)} color={u.is_blocked ? 'sage' : 'orange'}>
+                        {u.is_blocked ? t('admin.unblock') : t('admin.block')}
                       </ActionBtn>
                       <ActionBtn
                         onClick={() => changeRole(u.id, u.role === 'admin' ? 'student' : 'admin')}
@@ -282,18 +282,18 @@ export default function AdminPanel({ user }) {
               <Td className="font-mono text-slate-400">{o.id}</Td>
               <Td className="font-semibold text-ink">{o.name}</Td>
               <Td className="text-earth">{o.email}</Td>
-              <Td className="text-earth">{o.phoneNumber || '—'}</Td>
+              <Td className="text-earth">{o.phone_number || '—'}</Td>
               <Td>
-                {o.isApproved
+                {o.is_approved
                   ? <Badge text={t('admin.approved')} color="sage" />
                   : <Badge text={t('admin.pending')} color="orange" />
                 }
               </Td>
-              <Td className="text-earth text-xs">{o.createdAt?.split('T')[0]}</Td>
+              <Td className="text-earth text-xs">{o.created_at?.split('T')[0]}</Td>
               <Td>
                 <div className="flex gap-1.5 flex-wrap">
-                  <ActionBtn onClick={() => toggleOrgApproval(o.id)} color={o.isApproved ? 'orange' : 'sage'}>
-                    {o.isApproved ? t('admin.revoke') : t('admin.approve')}
+                  <ActionBtn onClick={() => toggleOrgApproval(o.id)} color={o.is_approved ? 'orange' : 'sage'}>
+                    {o.is_approved ? t('admin.revoke') : t('admin.approve')}
                   </ActionBtn>
                   <ActionBtn onClick={() => deleteOrg(o.id)} color="red">{t('admin.delete')}</ActionBtn>
                 </div>
@@ -320,9 +320,9 @@ export default function AdminPanel({ user }) {
                   color={task.status === 'open' ? 'sage' : task.status === 'closed' ? 'red' : 'blue'}
                 />
               </Td>
-              <Td className="text-earth">{task.maxVolunteers ?? '∞'}</Td>
+              <Td className="text-earth">{task.max_volunteers ?? '∞'}</Td>
               <Td className="text-earth text-xs">
-                {task.startDate ? task.startDate.split('T')[0] : '—'} → {task.endDate ? task.endDate.split('T')[0] : '—'}
+                {task.start_date ? task.start_date.split('T')[0] : '—'} → {task.end_date ? task.end_date.split('T')[0] : '—'}
               </Td>
               <Td>
                 <div className="flex gap-1.5 flex-wrap">
@@ -352,15 +352,15 @@ export default function AdminPanel({ user }) {
           {volunteers.map(v => (
             <tr key={v.id} className="hover:bg-offwhite transition-colors">
               <Td className="font-mono text-slate-400">{v.id}</Td>
-              <Td className="font-semibold text-ink">{v.user?.fullName || `User #${v.userId}`}</Td>
-              <Td className="text-earth">{v.task?.title || `Task #${v.taskId}`}</Td>
+              <Td className="font-semibold text-ink">{v.user?.full_name || `User #${v.user_id}`}</Td>
+              <Td className="text-earth">{v.task?.title || `Task #${v.task_id}`}</Td>
               <Td>
                 <Badge
                   text={v.status}
                   color={v.status === 'approved' ? 'sage' : v.status === 'rejected' ? 'red' : 'orange'}
                 />
               </Td>
-              <Td className="text-earth text-xs">{v.joinedAt?.split('T')[0]}</Td>
+              <Td className="text-earth text-xs">{v.joined_at?.split('T')[0]}</Td>
               <Td>
                 <div className="flex gap-1.5 flex-wrap">
                   <select

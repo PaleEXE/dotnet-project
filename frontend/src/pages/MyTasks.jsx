@@ -23,7 +23,7 @@ export default function MyTasks({ user }) {
   const loadTasks = () => {
     fetch(`${API}/tasks`)
       .then(r => r.json())
-      .then(all => setTasks(all.filter(t => t.organizationId === user.id)));
+      .then(all => setTasks(all.filter(t => t.organization_id === user.id)));
   };
 
   const startEdit = (task) => {
@@ -31,7 +31,7 @@ export default function MyTasks({ user }) {
     setEditTitle(task.title);
     setEditDescription(task.description);
     setEditStatus(task.status);
-    setEditMaxVolunteers(task.maxVolunteers || '');
+    setEditMaxVolunteers(task.max_volunteers || '');
   };
 
   const handleUpdate = async () => {
@@ -45,7 +45,7 @@ export default function MyTasks({ user }) {
         title: editTitle,
         description: editDescription,
         status: editStatus,
-        maxVolunteers: editMaxVolunteers ? parseInt(editMaxVolunteers) : null,
+        max_volunteers: editMaxVolunteers ? parseInt(editMaxVolunteers) : null,
       }),
     });
 

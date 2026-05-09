@@ -14,6 +14,7 @@ import Profile from './pages/Profile';
 import AdminPanel from './pages/AdminPanel';
 import Organizations from './pages/Organizations';
 import OrganizationProfile from './pages/OrganizationProfile';
+import Chatbot from './pages/Chatbot';
 
 const API = 'http://localhost:5001';
 
@@ -105,11 +106,11 @@ function App() {
           <div className="flex items-center gap-3">
             <LangSwitcher />
             <ProfileAvatar
-              src={user.profilePictureUrl || user.logoUrl}
-              name={user.fullName || user.name || user.email}
+              src={user.profile_picture_url || user.logo_url}
+              name={user.full_name || user.name || user.email}
               size="sm"
               borderColor="border-earth"
-              clickable={!!(user.profilePictureUrl || user.logoUrl)}
+              clickable={!!(user.profile_picture_url || user.logo_url)}
             />
             <button 
               onClick={logout}
@@ -132,9 +133,19 @@ function App() {
           {isOrg && <Route path="/my-tasks" element={<MyTasks user={user} token={token} />} />}
           {isStudent && <Route path="/profile" element={<Profile user={user} setUser={setUser} token={token} />} />}
           {isAdmin && <Route path="/admin" element={<AdminPanel user={user} token={token} />} />}
+          <Route path="/chatbot" element={<Chatbot />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </main>
+
+      {/* Floating Chatbot Button */}
+      <Link
+        to="/chatbot"
+        className="fixed bottom-20 right-6 z-50 w-14 h-14 bg-earth text-white rounded-full flex items-center justify-center shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:bg-earth/90 transition-transform hover:scale-110 cursor-pointer animate-bounce-slow"
+        title="Open AI Assistant"
+      >
+        <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+      </Link>
 
       {/* Bottom Navigation */}
       <nav className="fixed bottom-0 w-full bg-offwhite border-t border-earth/20 shadow-[0_-2px_10px_rgba(140,120,89,0.1)] z-50">

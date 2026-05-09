@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import ImageModal from './ImageModal';
 import { useI18n } from '../i18n/I18nContext';
+import { API } from '../App';
 
 /**
  * TaskImageGallery – Renders task images as thumbnails with lightbox.
  *
  * Props:
- *   images   – array of { id, imageUrl } objects
+ *   images   – array of { id, image_url } objects
  *   mode     – 'card' (single thumbnail) | 'detail' (full gallery)
  */
 export default function TaskImageGallery({ images = [], mode = 'card' }) {
@@ -18,6 +19,8 @@ export default function TaskImageGallery({ images = [], mode = 'card' }) {
     setLoadedIds((prev) => new Set(prev).add(id));
   };
 
+  const getFullUrl = (url) => url?.startsWith('/') ? `${API}${url}` : url;
+
   if (!images || images.length === 0) return null;
 
   // Card mode: show first image as a banner thumbnail
@@ -27,14 +30,14 @@ export default function TaskImageGallery({ images = [], mode = 'card' }) {
       <>
         <div
           className="relative h-44 w-full bg-slate-100 overflow-hidden cursor-pointer group"
-          onClick={() => setModalSrc(img.imageUrl)}
+          onClick={() => setModalSrc(getFullUrl(img.image_url))}
         >
           {/* Skeleton while loading */}
           {!loadedIds.has(img.id) && (
             <div className="absolute inset-0 skeleton-shimmer" />
           )}
           <img
-            src={img.imageUrl}
+            src={getFullUrl(img.image_url)}
             alt="Task"
             loading="lazy"
             onLoad={() => markLoaded(img.id)}
@@ -65,14 +68,14 @@ export default function TaskImageGallery({ images = [], mode = 'card' }) {
             <div
               key={img.id}
               className="relative min-w-full h-full snap-start cursor-pointer group"
-              onClick={() => setModalSrc(img.imageUrl)}
+              onClick={() => setModalSrc(getFullUrl(img.image_url))}
             >
               {/* Skeleton while loading */}
               {!loadedIds.has(img.id) && (
                 <div className="absolute inset-0 skeleton-shimmer" />
               )}
               <img
-                src={img.imageUrl}
+                src={getFullUrl(img.image_url)}
                 alt="Task visual"
                 loading="lazy"
                 onLoad={() => markLoaded(img.id)}

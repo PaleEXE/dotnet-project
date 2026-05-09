@@ -18,16 +18,16 @@ export default function MyApplications({ user }) {
           fetch(`${API}/hours/user/${user.id}`)
             .then(r => r.json())
             .then(hours => {
-              const taskHours = hours.filter(h => h.taskId === v.taskId);
+              const taskHours = hours.filter(h => h.task_id === v.task_id);
               if (taskHours.length > 0) {
-                setHoursByTask(prev => ({ ...prev, [v.taskId]: taskHours }));
+                setHoursByTask(prev => ({ ...prev, [v.task_id]: taskHours }));
               }
             });
         });
       });
   }, [user]);
 
-  const totalHours = Object.values(hoursByTask).flat().reduce((sum, h) => sum + h.hoursWorked, 0);
+  const totalHours = Object.values(hoursByTask).flat().reduce((sum, h) => sum + h.hours_worked, 0);
 
   return (
     <div className="max-w-4xl mx-auto animate-fade-in">
@@ -65,8 +65,8 @@ export default function MyApplications({ user }) {
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
                   <h3 className="text-xl font-bold text-ink line-clamp-1">
-                    <Link to={`/tasks/${v.taskId}`} className="hover:text-sage-700 transition-colors">
-                      {v.task?.title || `Task #${v.taskId}`}
+                    <Link to={`/tasks/${v.task_id}`} className="hover:text-sage-700 transition-colors">
+                      {v.task?.title || `Task #${v.task_id}`}
                     </Link>
                   </h3>
                   <span className={`px-2.5 py-1 text-xs font-bold uppercase tracking-wider rounded-full shrink-0 ${
@@ -80,29 +80,29 @@ export default function MyApplications({ user }) {
                 
                 <p className="text-sm text-earth flex items-center">
                   <svg className="w-4 h-4 mr-1.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                  {t('myApplications.joined')}: {v.joinedAt?.split('T')[0]}
+                  {t('myApplications.joined')}: {v.joined_at?.split('T')[0]}
                 </p>
 
                 {/* Show logged hours for approved volunteers */}
-                {v.status === 'approved' && hoursByTask[v.taskId] && hoursByTask[v.taskId].length > 0 && (
+                {v.status === 'approved' && hoursByTask[v.task_id] && hoursByTask[v.task_id].length > 0 && (
                   <div className="mt-4 bg-offwhite border border-sand rounded-2xl p-4">
                     <h4 className="text-xs font-bold text-ink uppercase tracking-wider mb-3 flex items-center gap-1.5">
                       <svg className="w-4 h-4 text-sage-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                       {t('myApplications.loggedHours')}
                     </h4>
                     <div className="space-y-2">
-                      {hoursByTask[v.taskId].map(h => (
+                      {hoursByTask[v.task_id].map(h => (
                         <div key={h.id} className="flex items-center justify-between text-sm">
                           <div className="flex items-center gap-2">
-                            <span className="font-semibold text-sage-700">{h.hoursWorked}h</span>
+                            <span className="font-semibold text-sage-700">{h.hours_worked}h</span>
                             {h.notes && <span className="text-earth">— {h.notes}</span>}
                           </div>
-                          <span className="text-xs text-slate-400">{new Date(h.recordedAt).toLocaleDateString()}</span>
+                          <span className="text-xs text-slate-400">{new Date(h.recorded_at).toLocaleDateString()}</span>
                         </div>
                       ))}
                       <div className="pt-2 mt-2 border-t border-sand flex justify-between text-sm font-semibold">
                         <span className="text-ink">{t('myApplications.total')}</span>
-                        <span className="text-sage-700">{hoursByTask[v.taskId].reduce((s, h) => s + h.hoursWorked, 0).toFixed(1)}h</span>
+                        <span className="text-sage-700">{hoursByTask[v.task_id].reduce((s, h) => s + h.hours_worked, 0).toFixed(1)}h</span>
                       </div>
                     </div>
                   </div>
@@ -110,7 +110,7 @@ export default function MyApplications({ user }) {
               </div>
               
               <div className="shrink-0 pt-1 md:pt-0 border-t md:border-none border-slate-100 w-full md:w-auto mt-4 md:mt-0">
-                <Link to={`/tasks/${v.taskId}`} className="inline-block w-full text-center px-4 py-2 bg-white border border-sand hover:bg-offwhite text-ink text-sm font-semibold rounded-2xl transition-colors">
+                <Link to={`/tasks/${v.task_id}`} className="inline-block w-full text-center px-4 py-2 bg-white border border-sand hover:bg-offwhite text-ink text-sm font-semibold rounded-2xl transition-colors">
                   {t('myApplications.viewTask')}
                 </Link>
               </div>

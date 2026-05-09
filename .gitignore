@@ -61,3 +61,16 @@ frontend/.env.local
 ## --- OS Generated Files ---
 .DS_Store
 Thumbs.db
+
+__pycache__
+venv
+
+fastapi_backend/images/uploads/*.png
+fastapi_backend/images/uploads/*.jpg
+fastapi_backend/images/uploads/*.jpeg
+fastapi_backend/images/uploads/*.gif
+fastapi_backend/images/uploads/*.webp
+
+#Ignore vector_store
+fastapi_backend/vector_store/*.pkl
+fastapi_backend/vector_store/*.json

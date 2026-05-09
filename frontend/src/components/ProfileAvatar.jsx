@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import ImageModal from './ImageModal';
+import { API } from '../App';
 
 /**
  * ProfileAvatar – Reusable avatar component with skeleton loader,
@@ -25,6 +26,9 @@ export default function ProfileAvatar({
   const [error, setError] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
+  const getFullUrl = (url) => url?.startsWith('/') ? `${API}${url}` : url;
+  const fullSrc = getFullUrl(src);
+
   const sizes = {
     sm: 'w-8 h-8 text-sm',
     md: 'w-12 h-12 text-lg',
@@ -34,7 +38,7 @@ export default function ProfileAvatar({
 
   const sizeClass = sizes[size] || sizes.md;
   const letter = (name || '?').charAt(0).toUpperCase();
-  const hasImage = src && !error;
+  const hasImage = fullSrc && !error;
 
   const handleClick = () => {
     if (clickable && hasImage) setShowModal(true);
@@ -62,7 +66,7 @@ export default function ProfileAvatar({
         {/* Actual image */}
         {hasImage && (
           <img
-            src={src}
+            src={fullSrc}
             alt={name}
             loading="lazy"
             onLoad={() => setLoaded(true)}
@@ -80,7 +84,7 @@ export default function ProfileAvatar({
       {/* Full-size modal */}
       {showModal && (
         <ImageModal
-          src={src}
+          src={fullSrc}
           alt={name}
           onClose={() => setShowModal(false)}
         />

@@ -30,9 +30,9 @@ export default function Register({ onLogin }) {
 
     if (role === 'organization') {
       endpoint = `${API}/auth/register/org`;
-      body = { email, password, name: orgName, phoneNumber };
+      body = { email, password, name: orgName, phone_number: phoneNumber };
     } else {
-      body = { email, password, fullName, phoneNumber, role, universityId, takingVolunteeringCourse };
+      body = { email, password, full_name: fullName, phone_number: phoneNumber, role, university_id: universityId, taking_volunteering_course: takingVolunteeringCourse };
     }
 
     const res = await fetch(endpoint, {
@@ -43,7 +43,7 @@ export default function Register({ onLogin }) {
 
     const data = await res.json();
     if (!res.ok) {
-      setError(data.message || t('register.failed'));
+      setError(data?.detail?.message || data?.message || data?.detail || t('register.failed'));
       return;
     }
 

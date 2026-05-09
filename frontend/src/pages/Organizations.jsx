@@ -70,7 +70,7 @@ export default function Organizations() {
               <div className="p-6">
                 <div className="flex items-center gap-4 mb-4">
                   <ProfileAvatar
-                    src={org.logoUrl}
+                    src={org.logo_url}
                     name={org.name}
                     size="lg"
                     clickable={false}
@@ -88,14 +88,14 @@ export default function Organizations() {
 
                 <div className="flex items-center justify-between pt-4 border-t border-slate-100">
                   <div className="flex items-center gap-1.5">
-                    <StarDisplay rating={org.averageRating} />
+                    <StarDisplay rating={org.average_rating} />
                     <span className="text-xs text-earth ml-1">
-                      {org.averageRating > 0 ? `${org.averageRating}` : t('organizations.noRatings')}
-                      {org.reviewCount > 0 && ` (${org.reviewCount})`}
+                      {org.average_rating > 0 ? `${org.average_rating}` : t('organizations.noRatings')}
+                      {org.review_count > 0 && ` (${org.review_count})`}
                     </span>
                   </div>
                   <span className="text-xs text-earth bg-slate-100 px-2 py-1 rounded-full font-medium">
-                    {org.taskCount} {org.taskCount === 1 ? t('organizations.task') : t('organizations.tasks')}
+                    {org.task_count} {org.task_count === 1 ? t('organizations.task') : t('organizations.tasks')}
                   </span>
                 </div>
               </div>

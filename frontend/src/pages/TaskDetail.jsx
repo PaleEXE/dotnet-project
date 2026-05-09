@@ -31,7 +31,7 @@ export default function TaskDetail({ user }) {
 
   useEffect(() => {
     if (user.role === 'student' && volunteers.length > 0) {
-      setAlreadyApplied(volunteers.some(v => v.userId === user.id));
+      setAlreadyApplied(volunteers.some(v => v.user_id === user.id));
     }
   }, [user, volunteers]);
 
@@ -39,7 +39,7 @@ export default function TaskDetail({ user }) {
     const res = await fetch(`${API}/volunteers`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ taskId: parseInt(id), userId: user.id }),
+      body: JSON.stringify({ task_id: parseInt(id), user_id: user.id }),
     });
     if (res.ok) {
       setAlreadyApplied(true);
@@ -66,10 +66,10 @@ export default function TaskDetail({ user }) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        organizationId: user.id,
-        taskId: parseInt(id),
-        userId: volunteerUserId,
-        hoursWorked: parseFloat(logHours),
+        organization_id: user.id,
+        task_id: parseInt(id),
+        user_id: volunteerUserId,
+        hours_worked: parseFloat(logHours),
         notes: logNotes.trim() || null,
       }),
     });
@@ -86,7 +86,7 @@ export default function TaskDetail({ user }) {
     }
   };
 
-  const getVolunteerHours = (userId) => hoursLog.filter(h => h.userId === userId);
+  const getVolunteerHours = (user_id) => hoursLog.filter(h => h.user_id === user_id);
 
   if (!task) return <div className="py-20 text-center text-earth font-medium">{t('taskDetail.loading')}</div>;
 
@@ -95,8 +95,8 @@ export default function TaskDetail({ user }) {
       
       <div className="bg-white rounded-2xl shadow-sm border border-sand overflow-hidden">
         {/* Cover Images */}
-        {task.taskImages && task.taskImages.length > 0 && (
-          <TaskImageGallery images={task.taskImages} mode="detail" />
+        {task.task_images && task.task_images.length > 0 && (
+          <TaskImageGallery images={task.task_images} mode="detail" />
         )}
 
         <div className="p-8">
@@ -111,10 +111,10 @@ export default function TaskDetail({ user }) {
             </span>
           </div>
 
-          {task.taskTags && task.taskTags.length > 0 && (
+          {task.task_tags && task.task_tags.length > 0 && (
             <div className="flex flex-wrap gap-2 mb-6">
-              {task.taskTags.map(tt => (
-                <span key={tt.tagId} className="bg-slate-100 text-earth px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide">
+              {task.task_tags.map(tt => (
+                <span key={tt.tag_id} className="bg-slate-100 text-earth px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide">
                   {tt.tag.name}
                 </span>
               ))}
@@ -129,27 +129,27 @@ export default function TaskDetail({ user }) {
             {task.organization && (
               <div>
                 <p className="text-sm font-semibold text-earth uppercase tracking-wider mb-1">{t('taskDetail.organization')}</p>
-                <Link to={`/organizations/${task.organizationId}`} className="font-medium text-sage-700 hover:text-sage-800 transition-colors">
+                <Link to={`/organizations/${task.organization_id}`} className="font-medium text-sage-700 hover:text-sage-800 transition-colors">
                   {task.organization.name}
                 </Link>
               </div>
             )}
-            {task.maxVolunteers && (
+            {task.max_volunteers && (
               <div>
                 <p className="text-sm font-semibold text-earth uppercase tracking-wider mb-1">{t('taskDetail.volunteersNeeded')}</p>
-                <p className="font-medium text-ink">{task.maxVolunteers}</p>
+                <p className="font-medium text-ink">{task.max_volunteers}</p>
               </div>
             )}
-            {task.startDate && (
+            {task.start_date && (
               <div>
-                <p className="text-sm font-semibold text-earth uppercase tracking-wider mb-1">{t('taskDetail.startDate')}</p>
-                <p className="font-medium text-ink">{new Date(task.startDate).toLocaleDateString()}</p>
+                <p className="text-sm font-semibold text-earth uppercase tracking-wider mb-1">{t('taskDetail.start_date')}</p>
+                <p className="font-medium text-ink">{new Date(task.start_date).toLocaleDateString()}</p>
               </div>
             )}
-            {task.endDate && (
+            {task.end_date && (
               <div>
-                <p className="text-sm font-semibold text-earth uppercase tracking-wider mb-1">{t('taskDetail.endDate')}</p>
-                <p className="font-medium text-ink">{new Date(task.endDate).toLocaleDateString()}</p>
+                <p className="text-sm font-semibold text-earth uppercase tracking-wider mb-1">{t('taskDetail.end_date')}</p>
+                <p className="font-medium text-ink">{new Date(task.end_date).toLocaleDateString()}</p>
               </div>
             )}
           </div>
@@ -189,21 +189,21 @@ export default function TaskDetail({ user }) {
           ) : (
             <div className="space-y-4 stagger-children">
               {volunteers.map(v => {
-                const vHours = getVolunteerHours(v.userId);
-                const totalHours = vHours.reduce((s, h) => s + h.hoursWorked, 0);
+                const vHours = getVolunteerHours(v.user_id);
+                const totalHours = vHours.reduce((s, h) => s + h.hours_worked, 0);
 
                 return (
                   <div key={v.id} className="bg-white rounded-2xl shadow-sm border border-sand overflow-hidden animate-slide-up">
                     <div className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                       <div className="flex items-center gap-3">
                         <ProfileAvatar
-                          src={v.user?.profilePictureUrl}
-                          name={v.user?.fullName || `User #${v.userId}`}
+                          src={v.user?.profile_picture_url}
+                          name={v.user?.full_name || `User #${v.user_id}`}
                           size="md"
                         />
                         <div>
-                          <p className="font-bold text-ink text-lg">{v.user?.fullName || `User #${v.userId}`}</p>
-                          <p className="text-sm text-earth mt-1">{t('taskDetail.applied')}: {new Date(v.joinedAt).toLocaleDateString()}</p>
+                          <p className="font-bold text-ink text-lg">{v.user?.full_name || `User #${v.user_id}`}</p>
+                          <p className="text-sm text-earth mt-1">{t('taskDetail.applied')}: {new Date(v.joined_at).toLocaleDateString()}</p>
                           {totalHours > 0 && (
                             <p className="text-sm text-sage-600 font-semibold mt-1 flex items-center gap-1">
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
@@ -239,9 +239,9 @@ export default function TaskDetail({ user }) {
                           </div>
                         )}
 
-                        {v.status === 'approved' && logFormUserId !== v.userId && (
+                        {v.status === 'approved' && logFormUserId !== v.user_id && (
                           <button
-                            onClick={() => { setLogFormUserId(v.userId); setLogHours(''); setLogNotes(''); }}
+                            onClick={() => { setLogFormUserId(v.user_id); setLogHours(''); setLogNotes(''); }}
                             className="px-3 py-1.5 bg-slate-100 hover:bg-sage-50 text-sage-700 border border-sand hover:border-sage-200 text-sm font-semibold rounded transition-colors flex items-center gap-1.5"
                           >
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
@@ -252,14 +252,14 @@ export default function TaskDetail({ user }) {
                     </div>
 
                     {/* Log Hours Form (inline, for this volunteer) */}
-                    {logFormUserId === v.userId && (
+                    {logFormUserId === v.user_id && (
                       <div className="border-t border-sand bg-offwhite p-5 animate-slide-down">
                         <h4 className="text-sm font-bold text-ink mb-4 uppercase tracking-wider">
-                          {t('taskDetail.logHoursFor')} {v.user?.fullName || `User #${v.userId}`}
+                          {t('taskDetail.logHoursFor')} {v.user?.full_name || `User #${v.user_id}`}
                         </h4>
                         <div className="flex flex-col sm:flex-row gap-4">
                           <div className="flex-1">
-                            <label className="block text-xs font-semibold text-ink mb-1">{t('taskDetail.hoursWorked')}</label>
+                            <label className="block text-xs font-semibold text-ink mb-1">{t('taskDetail.hours_worked')}</label>
                             <input
                               type="number"
                               step="0.5"
@@ -283,7 +283,7 @@ export default function TaskDetail({ user }) {
                         </div>
                         <div className="flex gap-3 pt-4">
                           <button
-                            onClick={() => handleLogHours(v.userId)}
+                            onClick={() => handleLogHours(v.user_id)}
                             className="px-4 py-2 bg-sage hover:bg-sage-hover text-white text-sm font-semibold rounded-2xl transition-colors"
                           >
                             {t('taskDetail.submitHours')}
@@ -305,10 +305,10 @@ export default function TaskDetail({ user }) {
                           {vHours.map(h => (
                             <div key={h.id} className="flex items-center justify-between text-sm">
                               <div className="flex items-center gap-2">
-                                <span className="font-semibold text-sage-700">{h.hoursWorked}h</span>
+                                <span className="font-semibold text-sage-700">{h.hours_worked}h</span>
                                 {h.notes && <span className="text-earth">— {h.notes}</span>}
                               </div>
-                              <span className="text-xs text-slate-400">{new Date(h.recordedAt).toLocaleDateString()}</span>
+                              <span className="text-xs text-slate-400">{new Date(h.recorded_at).toLocaleDateString()}</span>
                             </div>
                           ))}
                         </div>

@@ -17,7 +17,7 @@ export default function Home({ user }) {
     } else if (user.role === 'organization') {
       fetch(`${API}/tasks`)
         .then(r => r.json())
-        .then(all => setTasks(all.filter(t => t.organizationId === user.id)));
+        .then(all => setTasks(all.filter(t => t.organization_id === user.id)));
     }
   }, [user]);
 
@@ -29,8 +29,8 @@ export default function Home({ user }) {
   const TaskCard = ({ t: task }) => (
     <div className="bg-white rounded-[2rem] shadow-[0_4px_20px_rgba(0,0,0,0.06)] overflow-hidden transition-all duration-300 hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] hover:-translate-y-1 animate-fade-in border border-sand">
       {/* Image thumbnail */}
-      {task.taskImages && task.taskImages.length > 0 && (
-        <TaskImageGallery images={task.taskImages} mode="card" />
+      {task.task_images && task.task_images.length > 0 && (
+        <TaskImageGallery images={task.task_images} mode="card" />
       )}
 
       <div className="p-6">
@@ -59,28 +59,28 @@ export default function Home({ user }) {
         <p className="text-ink/80 mb-5 line-clamp-2 text-sm leading-relaxed">{task.description}</p>
         
         <div className="flex flex-col space-y-2 mb-6">
-          {(task.startDate || task.endDate) && (
+          {(task.start_date || task.end_date) && (
             <div className="flex items-center text-sm text-slate-500">
               <svg className="w-4 h-4 mr-2 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
               <span>
-                {task.startDate && new Date(task.startDate).toLocaleDateString()} 
-                {task.startDate && task.endDate && ' — '} 
-                {task.endDate && new Date(task.endDate).toLocaleDateString()}
+                {task.start_date && new Date(task.start_date).toLocaleDateString()} 
+                {task.start_date && task.end_date && ' — '} 
+                {task.end_date && new Date(task.end_date).toLocaleDateString()}
               </span>
             </div>
           )}
-          {task.maxVolunteers && (
+          {task.max_volunteers && (
             <div className="flex items-center text-sm text-slate-500">
               <svg className="w-4 h-4 mr-2 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-              <span>{t('home.volunteersNeeded')}: {task.maxVolunteers}</span>
+              <span>{t('home.volunteersNeeded')}: {task.max_volunteers}</span>
             </div>
           )}
         </div>
 
-        {task.taskTags && task.taskTags.length > 0 && (
+        {task.task_tags && task.task_tags.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-5">
-            {task.taskTags.map(tt => (
-              <span key={tt.tagId} className="bg-sand/30 text-earth px-3 py-1 rounded-full text-xs font-semibold">
+            {task.task_tags.map(tt => (
+              <span key={tt.tag_id} className="bg-sand/30 text-earth px-3 py-1 rounded-full text-xs font-semibold">
                 {tt.tag.name}
               </span>
             ))}
@@ -104,7 +104,7 @@ export default function Home({ user }) {
       {/* Welcome Header */}
       <div className="mb-6">
         <h1 className="text-3xl font-extrabold text-ink mb-1">
-          Welcome back, {user.fullName ? user.fullName.split(' ')[0] : 'friend'}!
+          Welcome back, {user.full_name ? user.full_name.split(' ')[0] : 'friend'}!
         </h1>
         <p className="text-earth font-medium">Let's make a difference today.</p>
       </div>
@@ -113,7 +113,7 @@ export default function Home({ user }) {
       {user.role === 'student' && (
         <div className="bg-sand rounded-[2rem] p-6 mb-8 shadow-sm flex justify-around items-center">
           <div className="text-center">
-            <div className="text-3xl font-black text-ink mb-1">{(user.totalHours || 24)}</div>
+            <div className="text-3xl font-black text-ink mb-1">{(user.total_hours || 24)}</div>
             <div className="text-xs font-bold text-earth uppercase tracking-wider">Hours Volunteered</div>
           </div>
           <div className="w-px h-12 bg-white/50"></div>

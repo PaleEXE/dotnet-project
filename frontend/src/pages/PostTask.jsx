@@ -89,13 +89,13 @@ export default function PostTask({ user }) {
     }
 
     const body = {
-      organizationId: user.id,
+      organization_id: user.id,
       title,
       description,
-      maxVolunteers: maxVolunteers ? parseInt(maxVolunteers) : null,
-      startDate: startDate || null,
-      endDate: endDate || null,
-      tagIds: selectedTags
+      max_volunteers: maxVolunteers ? parseInt(maxVolunteers) : null,
+      start_date: startDate || null,
+      end_date: endDate || null,
+      tag_ids: selectedTags
     };
 
     const res = await fetch(`${API}/tasks`, {
@@ -110,7 +110,7 @@ export default function PostTask({ user }) {
         await fetch(`${API}/tasks/${task.id}/images`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ imageUrl: finalImageUrl.trim() })
+          body: JSON.stringify({ image_url: finalImageUrl.trim() })
         });
       }
       setUploading(false);

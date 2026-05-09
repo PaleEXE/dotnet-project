@@ -34,7 +34,7 @@ export default function Profile({ user, setUser }) {
 
     if (res.ok) {
       const data = await res.json();
-      const updatedProfile = { ...profile, profilePictureUrl: data.url };
+      const updatedProfile = { ...profile, profile_picture_url: data.url };
       
       await fetch(`${API}/users/${user.id}`, {
         method: 'PUT',
@@ -46,7 +46,7 @@ export default function Profile({ user, setUser }) {
       
       const saved = JSON.parse(localStorage.getItem('user'));
       if (saved) {
-        saved.profilePictureUrl = data.url;
+        saved.profile_picture_url = data.url;
         localStorage.setItem('user', JSON.stringify(saved));
         if (setUser) setUser(saved);
       }
@@ -56,7 +56,7 @@ export default function Profile({ user, setUser }) {
 
   if (!profile) return <div className="py-20 text-center text-earth font-medium">{t('profile.loading')}</div>;
 
-  const totalHours = workLogs.reduce((sum, h) => sum + h.hoursWorked, 0);
+  const totalHours = workLogs.reduce((sum, h) => sum + h.hours_worked, 0);
 
   return (
     <div className="max-w-4xl mx-auto space-y-10 animate-fade-in">
@@ -74,10 +74,10 @@ export default function Profile({ user, setUser }) {
                 </div>
               ) : (
                 <ProfileAvatar
-                  src={profile.profilePictureUrl}
-                  name={profile.fullName}
+                  src={profile.profile_picture_url}
+                  name={profile.full_name}
                   size="xl"
-                  clickable={!!profile.profilePictureUrl}
+                  clickable={!!profile.profile_picture_url}
                 />
               )}
               
@@ -92,26 +92,26 @@ export default function Profile({ user, setUser }) {
           </div>
           
           <div className="flex-1 text-center md:text-left">
-            <h2 className="text-2xl font-bold text-ink">{profile.fullName}</h2>
+            <h2 className="text-2xl font-bold text-ink">{profile.full_name}</h2>
             <p className="text-earth mt-1">{profile.email}</p>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-8 mt-6">
-              {profile.phoneNumber && (
+              {profile.phone_number && (
                 <div>
                   <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">{t('profile.phone')}</p>
-                  <p className="font-medium text-ink">{profile.phoneNumber}</p>
+                  <p className="font-medium text-ink">{profile.phone_number}</p>
                 </div>
               )}
-              {profile.universityId && (
+              {profile.university_id && (
                 <div>
-                  <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">{t('profile.universityId')}</p>
-                  <p className="font-medium text-ink">{profile.universityId}</p>
+                  <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">{t('profile.university_id')}</p>
+                  <p className="font-medium text-ink">{profile.university_id}</p>
                 </div>
               )}
               <div>
                 <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">{t('profile.courseStatus')}</p>
-                <span className={`inline-flex px-2 py-0.5 rounded text-xs font-bold ${profile.takingVolunteeringCourse ? 'bg-sage-100 text-sage-800' : 'bg-slate-100 text-earth'}`}>
-                  {profile.takingVolunteeringCourse ? t('profile.takingCourse') : t('profile.standardStudent')}
+                <span className={`inline-flex px-2 py-0.5 rounded text-xs font-bold ${profile.taking_volunteering_course ? 'bg-sage-100 text-sage-800' : 'bg-slate-100 text-earth'}`}>
+                  {profile.taking_volunteering_course ? t('profile.takingCourse') : t('profile.standardStudent')}
                 </span>
               </div>
             </div>
@@ -151,14 +151,14 @@ export default function Profile({ user, setUser }) {
                     <tr key={w.id} className="hover:bg-offwhite transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className="font-semibold text-ink">
-                          {w.task?.title || `Task #${w.taskId}`}
+                          {w.task?.title || `Task #${w.task_id}`}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-earth">
-                        {w.recordedAt?.split('T')[0]}
+                        {w.recorded_at?.split('T')[0]}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-sage-600 text-right">
-                        {w.hoursWorked} <span className="text-slate-400 font-normal ml-1">{t('admin.hrs')}</span>
+                        {w.hours_worked} <span className="text-slate-400 font-normal ml-1">{t('admin.hrs')}</span>
                       </td>
                       <td className="px-6 py-4 text-sm text-earth max-w-[300px] truncate">
                         {w.notes || <span className="text-slate-400 italic">{t('profile.noNotes')}</span>}
